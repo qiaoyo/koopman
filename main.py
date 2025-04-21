@@ -21,7 +21,7 @@ if __name__=="__main__":
     window=80
     batch_size=256
     lr = 6e-4
-    num_epochs = 5
+    num_epochs = 30
     
     set_device()
     set_seed(seed=seed)

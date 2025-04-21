@@ -55,6 +55,24 @@ def prepare_full_data(window=80):
     train_slide_label=np.zeros((num_train-window-1,window,6))  #num_train-30
     train_split_label=np.zeros((int((num_train-1)/window),window,6))
     
+        # ... existing code ...
+    
+    # 计算训练数据前4列的最大最小值
+    col_max = np.max(raw_data[:, 0:10], axis=0)
+    col_min = np.min(raw_data[:, 0:10], axis=0)
+    
+    # 保存归一化参数
+    normalization_params = {
+        'max_values': col_max,
+        'min_values': col_min
+    }
+    np.save(os.path.join(os.path.dirname(file_path), 'normalization_params.npy'), normalization_params)
+    print(normalization_params)
+    # 使用min-max归一化
+    for i in range(num_train):
+        for j in range(10):
+            raw_data[i, j] = (raw_data[i, j] - col_min[j]) / (col_max[j] - col_min[j])
+    
     j=1
     for i in range(int(num_train-window-1)):  #num_train-30
         train_slide_label[i,:,:]=raw_data[j:j+window,4:10]    #按时间窗划分数据集
@@ -63,12 +81,15 @@ def prepare_full_data(window=80):
     for i in range(int((num_train-1)/window)):  #num_train-30
         train_split_label[i,:,:]=raw_data[j:j+window,4:10]    #按时间窗划分数据集
         j=j+window
+    # ... existing code ...
+    
 
-    for i in range(num_train):
-        raw_data[i, 0] = raw_data[i, 0]/ 198.8755
-        raw_data[i, 1] = raw_data[i, 1] / 183.4
-        raw_data[i, 2] = raw_data[i, 2] / 183.5725
-        raw_data[i, 3] = raw_data[i, 3] / 184.4340
+    # ... existing code ...
+    # for i in range(num_train):
+    #     raw_data[i, 0] = raw_data[i, 0]/ 198.8755
+    #     raw_data[i, 1] = raw_data[i, 1] / 183.4
+    #     raw_data[i, 2] = raw_data[i, 2] / 183.5725
+    #     raw_data[i, 3] = raw_data[i, 3] / 184.4340
 
     j=1
     for i in range(int(num_train-window-1)):  #num_train-30
@@ -96,6 +117,14 @@ def prepare_full_data(window=80):
     test_split_data=np.zeros((int((num_test-1)/window),window,10))  #num_test-30
     test_slide_data=np.zeros((num_test-window-1,window,10))
 
+ 
+
+    # 在测试数据处理部分
+    # 使用训练数据的归一化参数
+    for i in range(num_test):
+        for j in range(10):
+            raw_data[i, j] = (raw_data[i, j] - col_min[j]) / (col_max[j] - col_min[j])
+    
     j=1
     for i in range(int(num_test-window-1)):
         test_slide_label[i,:,:]=raw_data[j:j+window,4:10]
@@ -104,13 +133,12 @@ def prepare_full_data(window=80):
     for i in range(int((num_test-1)/window)):  #num_test-30
         test_split_label[i,:,:]=raw_data[j:j+window,4:10]    #按时间窗划分数据集
         j=j+window
-
     #数据归一化过程，除最大值
-    for i in range(num_test):
-        raw_data[i, 0] = raw_data[i, 0]/198.8755
-        raw_data[i, 1] = raw_data[i, 1] / 183.4
-        raw_data[i, 2] = raw_data[i, 2] / 183.5725
-        raw_data[i, 3] = raw_data[i, 3] / 184.4340
+    # for i in range(num_test):
+    #     raw_data[i, 0] = raw_data[i, 0]/198.8755
+    #     raw_data[i, 1] = raw_data[i, 1] / 183.4
+    #     raw_data[i, 2] = raw_data[i, 2] / 183.5725
+    #     raw_data[i, 3] = raw_data[i, 3] / 184.4340
     
     j=1
     for i in range(int(num_test-window-1)):
