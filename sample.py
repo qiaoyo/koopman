@@ -51,8 +51,8 @@ class SyntheticTimeSeriesDataset(Dataset):
 
 # 2. 模型构建
 class MultiScaleTimeSeriesModel(nn.Module):
-    def __init__(self, input_size=1, output_dim=1,hidden_size=64, lstm_layers=3, fusion_size=128,
-                 transformer_d_model=128, transformer_nhead=4, transformer_layers=6, dropout=0.1):
+    def __init__(self, input_size=1, output_dim=1,hidden_size=64, lstm_layers=1, fusion_size=128,
+                 transformer_d_model=64, transformer_nhead=4, transformer_layers=2, dropout=0.3):
         super(MultiScaleTimeSeriesModel, self).__init__()
         self.hidden_size = hidden_size
         self.input_size = input_size
@@ -70,7 +70,7 @@ class MultiScaleTimeSeriesModel(nn.Module):
         self.relu = nn.ReLU()
         self.proj_linear = nn.Linear(fusion_size, transformer_d_model)
         self.ffn=nn.Sequential(
-            nn.Linear(128,64),
+            nn.Linear(64,64),
             nn.ReLU(),
             nn.Linear(64,output_dim)
         )

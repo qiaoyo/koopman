@@ -19,8 +19,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 if __name__=="__main__":
     seed=1023
     window=80
-    batch_size=256
-    lr = 6e-4
+    batch_size=512
+    lr = 6e-5
     num_epochs = 30
     
     set_device()
@@ -63,14 +63,20 @@ if __name__=="__main__":
     model=MultiScaleTimeSeriesModel(input_size=10,output_dim=6)
     model=model.cuda()
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)  # 传入网络参数和学习率
-    loss_function = torch.nn.MSELoss(reduction="mean")  # 最小均方误差
+    # 添加L2正则化
+    weight_decay = 1e-4  # L2正则化系数
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
+    loss_function = torch.nn.MSELoss(reduction="mean")
 
     best_loss = float('inf')
     save_dir = r'C:\Users\Administrator\Desktop\koopman-data\data\test'
-    train_losses = []  # 记录训练损失
-    test_losses = []   # 记录测试损失
+    train_losses = []
+    test_losses = []
     save_freq = 50
+    
+    # 早停参数
+    patience = 5  # 容忍测试集性能不提升的轮数
+    patience_counter = 0  # 计数器
     
     for epoch in range(num_epochs):
         model.train()
@@ -119,15 +125,17 @@ if __name__=="__main__":
                 test_rmse.append(rmse.item())
         
         avg_test_loss = np.mean(test_loss)
-        test_losses.append(avg_test_loss)  # 保存测试损失
+        test_losses.append(avg_test_loss)
         avg_test_mae = np.mean(test_mae)
         avg_test_rmse = np.mean(test_rmse)
         
         print(f"Test Metrics - Loss: {avg_test_loss:.4f}, MAE: {avg_test_mae:.4f}, RMSE: {avg_test_rmse:.4f}")
         
+        # 检查是否需要保存最佳模型和早停
         if avg_test_loss < best_loss:
             best_loss = avg_test_loss
-            model_path = os.path.join(save_dir, f'best_model.pth')
+            patience_counter = 0  # 重置计数器
+            model_path = os.path.join(save_dir, f'best_model_0421.pth')
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -138,6 +146,11 @@ if __name__=="__main__":
                 'test_rmse': avg_test_rmse
             }, model_path)
             print(f"Best model saved at epoch {epoch+1}")
+        else:
+            patience_counter += 1
+            if patience_counter >= patience:
+                print(f"\nEarly stopping triggered after {epoch+1} epochs")
+                break
     
     # 保存训练历史
     history = {
@@ -147,11 +160,11 @@ if __name__=="__main__":
         'final_test_mae': avg_test_mae,
         'final_test_rmse': avg_test_rmse
     }
-    np.save(os.path.join(save_dir, 'training_history.npy'), history)
+    np.save(os.path.join(save_dir, 'training_history_0421.npy'), history)
     
     # 绘制训练和测试损失曲线
     plt.figure(figsize=(10, 6))
-    epochs = range(1, num_epochs + 1)
+    epochs = range(1, epoch + 2)
     
     # 绘制训练损失，使用蓝色线条和圆形标记
     plt.plot(epochs, train_losses, label='Training Loss', color='blue', marker='o', 
@@ -170,7 +183,7 @@ if __name__=="__main__":
     # 设置x轴刻度为整数
     plt.xticks(epochs)
     
-    plt.savefig(os.path.join(save_dir, 'loss_curves.png'))
+    plt.savefig(os.path.join(save_dir, 'loss_curves_0421.png'))
     plt.show()
     plt.close()  # 关闭图像
 
