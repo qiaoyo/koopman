@@ -37,6 +37,31 @@ def set_seed(seed=42):
     torch.manual_seed(seed)
     random.seed(seed)
 
+def time_series_augmentation(data, noise_level=0.01, shift_range=2):
+    """
+    对时序数据进行增强
+    params:
+        data: 原始数据 numpy array
+        noise_level: 高斯噪声水平
+        shift_range: 时间平移范围
+    """
+    augmented_data = np.copy(data)
+    
+    # 添加高斯噪声
+    noise = np.random.normal(0, noise_level, augmented_data.shape)
+    augmented_data += noise
+    
+    # 随机时间平移
+    shift = np.random.randint(-shift_range, shift_range + 1)
+    if shift > 0:
+        augmented_data = np.roll(augmented_data, shift, axis=0)
+        augmented_data[:shift] = augmented_data[shift]
+    elif shift < 0:
+        augmented_data = np.roll(augmented_data, shift, axis=0)
+        augmented_data[shift:] = augmented_data[shift-1]
+    
+    return augmented_data
+
 def prepare_full_data(window=80):
     '''
     train_slide_data, test_slide_data, train_split_data, test_split_data
@@ -72,7 +97,8 @@ def prepare_full_data(window=80):
     for i in range(num_train):
         for j in range(10):
             raw_data[i, j] = (raw_data[i, j] - col_min[j]) / (col_max[j] - col_min[j])
-    
+            
+
     j=1
     for i in range(int(num_train-window-1)):  #num_train-30
         train_slide_label[i,:,:]=raw_data[j:j+window,4:10]    #按时间窗划分数据集
@@ -104,6 +130,8 @@ def prepare_full_data(window=80):
         for k in range(window):
             train_split_data[i, k, 4:10] = raw_data[j-1, 4:10]  # 将初始状态扩充到训练样本中
         j = j + window
+    train_slide_data=time_series_augmentation(train_slide_data)
+    
 
     file_path = r'C:\Users\Administrator\Desktop\koopman-data\data\50-hour-test.xlsx'   # r对路径进行转义，windows需要
     raw_data = pd.read_excel(file_path, header=0)  # header=0表示第一行是表头，就自动去除了
@@ -117,8 +145,15 @@ def prepare_full_data(window=80):
     test_split_data=np.zeros((int((num_test-1)/window),window,10))  #num_test-30
     test_slide_data=np.zeros((num_test-window-1,window,10))
 
- 
-
+    col_max = np.max(raw_data[:, 0:10], axis=0)
+    col_min = np.min(raw_data[:, 0:10], axis=0)
+    
+    # 保存归一化参数
+    normalization_params = {
+        'max_values': col_max,
+        'min_values': col_min
+    }
+    np.save(os.path.join(os.path.dirname(file_path), 'normalization_params_test.npy'), normalization_params)
     # 在测试数据处理部分
     # 使用训练数据的归一化参数
     for i in range(num_test):

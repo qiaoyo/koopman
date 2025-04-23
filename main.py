@@ -21,7 +21,7 @@ if __name__=="__main__":
     window=80
     batch_size=512
     lr = 6e-5
-    num_epochs = 30
+    num_epochs = 50
     
     set_device()
     set_seed(seed=seed)
@@ -60,16 +60,37 @@ if __name__=="__main__":
                                 drop_last=False,
                                 pin_memory=True)
     from sample import MultiScaleTimeSeriesModel
-    model=MultiScaleTimeSeriesModel(input_size=10,output_dim=6)
-    model=model.cuda()
+    model = MultiScaleTimeSeriesModel(input_size=10, output_dim=6)
+    model = model.cuda()
+    
+    # 加载已保存的模型
+    save_dir = r'C:\Users\Administrator\Desktop\koopman-data\data\test_decode_ffn_aug'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    checkpoint_path = os.path.join(save_dir, 'best_model_0421.pth')
+    if os.path.exists(checkpoint_path):
+        checkpoint = torch.load(checkpoint_path)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        print(f"加载模型成功，从第{checkpoint['epoch'] + 1}轮继续训练")
+        print(f"已加载模型的测试损失: {checkpoint['test_loss']:.4f}")
+        print(f"已加载模型的MAE: {checkpoint['test_mae']:.4f}")
+        print(f"已加载模型的RMSE: {checkpoint['test_rmse']:.4f}")
+        best_loss = checkpoint['test_loss']  # 更新最佳损失值
+    else:
+        print("未找到已保存的模型，将从头开始训练")
+        best_loss = float('inf')
 
     # 添加L2正则化
     weight_decay = 1e-4  # L2正则化系数
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
+    
+    # 如果存在，加载优化器状态
+    if os.path.exists(checkpoint_path):
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     loss_function = torch.nn.MSELoss(reduction="mean")
 
     best_loss = float('inf')
-    save_dir = r'C:\Users\Administrator\Desktop\koopman-data\data\test'
+
     train_losses = []
     test_losses = []
     save_freq = 50
