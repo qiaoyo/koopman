@@ -64,7 +64,7 @@ if __name__=="__main__":
     model = model.cuda()
     
     # 加载已保存的模型
-    save_dir = r'C:\Users\Administrator\Desktop\koopman-data\data\test_decode_ffn_aug'
+    save_dir = r'C:\Users\Administrator\Desktop\koopman-data\data\test_decode_ffn_aug_norm4'
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     checkpoint_path = os.path.join(save_dir, 'best_model_0421.pth')

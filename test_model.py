@@ -50,8 +50,8 @@ def visualize_predictions(output_denorm, labels_denorm, save_dir):
 
 def test_model(model, test_loader, device, norm_params, save_dir):
     model.eval()
-    first_three_errors = []
-    last_three_errors = []
+    # 初始化6个自由度的误差列表
+    dof_errors = [[] for _ in range(6)]
     
     max_values = norm_params['max_values']
     min_values = norm_params['min_values']
@@ -73,24 +73,20 @@ def test_model(model, test_loader, device, norm_params, save_dir):
             all_outputs.append(output_denorm)
             all_labels.append(labels_denorm)
             
-            # 只计算最后一个时间步的误差
-            first_three_error = torch.mean(torch.abs(output_denorm[:, -1, :3] - labels_denorm[:, -1, :3]))
-            last_three_error = torch.mean(torch.abs(output_denorm[:, -1, 3:] - labels_denorm[:, -1, 3:]))
-            
-            first_three_errors.append(first_three_error.item())
-            last_three_errors.append(last_three_error.item())
+            # 计算每个自由度的误差
+            for i in range(6):
+                error = torch.mean(torch.abs(output_denorm[:, -1, i] - labels_denorm[:, -1, i]))
+                dof_errors[i].append(error.item())
     
     # 合并所有batch的输出
     all_outputs = torch.cat(all_outputs, dim=0)
     all_labels = torch.cat(all_labels, dim=0)
     
-    # 可视化整个数据集的最后一步预测结果
-    visualize_predictions(all_outputs, all_labels, save_dir)
+    # 计算每个自由度的平均误差
+    first_three_errors = np.array([np.mean(dof_errors[i]) for i in range(3)])
+    last_three_errors = np.array([np.mean(dof_errors[i]) for i in range(3, 6)])
     
-    avg_first_three_error = np.mean(first_three_errors)
-    avg_last_three_error = np.mean(last_three_errors)
-    
-    return avg_first_three_error, avg_last_three_error
+    return first_three_errors, last_three_errors
 
 if __name__ == "__main__":
     # 设置参数
@@ -99,12 +95,12 @@ if __name__ == "__main__":
     device = set_device()
     
     # 创建保存目录
-    save_dir = r'C:\Users\Administrator\Desktop\koopman-data\data\test_decode_ffn_aug'
+    save_dir = r'C:\Users\Administrator\Desktop\koopman-data\data\test_decode_ffn_aug_norm4'
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     norm_params_path = r'C:\Users\Administrator\Desktop\koopman-data\data\normalization_params.npy'    
     # 加载已保存的模型权重
-    checkpoint_path = r'C:\Users\Administrator\Desktop\koopman-data\data\test_decode_ffn_aug\best_model_0421.pth'
+    checkpoint_path = r'C:\Users\Administrator\Desktop\koopman-data\data\test_decode_ffn_aug_norm4\best_model_0421.pth'
     
     # 准备测试数据
     train_slide_dataset, _, test_slide_dataset, _ = prepare_full_data(window=window)
@@ -115,17 +111,16 @@ if __name__ == "__main__":
     print("最大值:", [f"{x:.4f}" for x in norm_params['max_values'][4:10]])  # 格式化为4位小数
     print("最小值:", [f"{x:.4f}" for x in norm_params['min_values'][4:10]])  # 格式化为4位小数
     test_slide_loader = torch.utils.data.DataLoader(
-        dataset=test_slide_dataset,
+        dataset=train_slide_dataset,
         batch_size=batch_size,
         shuffle=False,
         drop_last=False,
         pin_memory=True
     )
-    
     # 加载模型
     model = MultiScaleTimeSeriesModel(input_size=10, output_dim=6)
+
     model = model.to(device)
-    
 
     if os.path.exists(checkpoint_path):
         checkpoint = torch.load(checkpoint_path)

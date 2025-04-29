@@ -564,7 +564,6 @@ if __name__=='__main__':
         #     fisher[n] = fisher[n] /   # 样本总数 一个batch中
         #     fisher[n] = torch.autograd.Variable(fisher[n], requires_grad=False)  # 计算获得的Fisher信息矩阵，不计算这块的梯度\
 
-
     for i, (ini_datas,  labels) in enumerate(test_loader):
             ini_datas = ini_datas.cuda()
             labels = labels.cuda()
