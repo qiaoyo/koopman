@@ -139,6 +139,32 @@ def load_flight_stats():
     
     return stats
 
+def normalize_first_four(data, max_values=None, min_values=None):
+    """
+    对形状为(N, 10)的数据的前4列进行归一化
+    params:
+        data: numpy array, 形状为(N, 10)
+        max_values: numpy array, 形状为(4,), 前4列的最大值，如果为None则使用数据本身的最大值
+        min_values: numpy array, 形状为(4,), 前4列的最小值，如果为None则使用数据本身的最小值
+    return:
+        normalized_data: 归一化后的数据
+    """
+    normalized_data = data.copy()
+    
+    # 只对前4列进行归一化
+    for i in range(4):
+        # 如果没有提供max_values和min_values，则使用数据本身的最大最小值
+        col_max = max_values[i] if max_values is not None else np.max(data[:, i])
+        col_min = min_values[i] if min_values is not None else np.min(data[:, i])
+        
+        # 避免除以零
+        if col_max == col_min:
+            normalized_data[:, i] = 0
+        else:
+            normalized_data[:, i] = (data[:, i] - col_min) / (col_max - col_min)
+    
+    return normalized_data
+
 def prepare_full_data(window=80):
     '''
     train_slide_data, test_slide_data, train_split_data, test_split_data
@@ -160,51 +186,41 @@ def prepare_full_data(window=80):
         # ... existing code ...
     
     # 计算训练数据前4列的最大最小值
-    col_max = np.max(raw_data[:, 0:10], axis=0)
-    col_min = np.min(raw_data[:, 0:10], axis=0)
+    loaded_stats = load_flight_stats()
+    motor_cmd_max= loaded_stats['Motors_CMD']['max']
+    motor_cmd_min= loaded_stats['Motors_CMD']['min']
+    pos_max = loaded_stats['Pos']['max']
+    pos_min = loaded_stats['Pos']['min']
+    euler_max = loaded_stats['Euler']['max']
+    euler_min = loaded_stats['Euler']['min']
     
-    # 保存归一化参数
-    normalization_params = {
-        'max_values': col_max,
-        'min_values': col_min
-    }
-    np.save(os.path.join(os.path.dirname(file_path), 'normalization_params.npy'), normalization_params)
-    print(normalization_params)
     # 使用min-max归一化
-    for i in range(num_train):
-        for j in range(10):
-            raw_data[i, j] = (raw_data[i, j] - col_min[j]) / (col_max[j] - col_min[j])
-            
-
+    raw_data[:,0:4] = normalize_first_four(raw_data[:,0:4], motor_cmd_max, motor_cmd_min)
+    # raw_data[:,4:7] = normalize_first_four(raw_data[:,4:7], pos_max, pos_min)
+    # raw_data[:,7:10] = normalize_first_four(raw_data[:,7:10], euler_max, euler_min)    
     j=1
-    for i in range(int(num_train-window-1)):  #num_train-30
+    for i in range(int(num_train-window-1)):  
         train_slide_label[i,:,:]=raw_data[j:j+window,4:10]    #按时间窗划分数据集
         j=j+1
     j=1
-    for i in range(int((num_train-1)/window)):  #num_train-30
+    for i in range(int((num_train-1)/window)):  
         train_split_label[i,:,:]=raw_data[j:j+window,4:10]    #按时间窗划分数据集
         j=j+window
-    for i in range(num_train):
-        raw_data[i, 0] = raw_data[i, 0]/ 198.8755
-        raw_data[i, 1] = raw_data[i, 1] / 183.4
-        raw_data[i, 2] = raw_data[i, 2] / 183.5725
-        raw_data[i, 3] = raw_data[i, 3] / 184.4340
-
+   
     j=1
-    for i in range(int(num_train-window-1)):  #num_train-30
+    for i in range(int(num_train-window-1)):  
         train_slide_data[i,:,0:4]=raw_data[j:j+window,0:4]
         for k in range(window):
             train_slide_data[i, k, 4:10] = raw_data[j-1, 4:10]  #将初始状态扩充到训练样本中
         j=j+1
 
     j=1
-    for i in range(int((num_train-1)/window)):  # num_train-30
+    for i in range(int((num_train-1)/window)):  
         train_split_data[i, :, 0:4] = raw_data[j:j+window, 0:4]
         for k in range(window):
             train_split_data[i, k, 4:10] = raw_data[j-1, 4:10]  # 将初始状态扩充到训练样本中
         j = j + window
     train_slide_data=time_series_augmentation(train_slide_data)
-    
 
     file_path = r'C:\Users\Administrator\Desktop\koopman-data\data\50-hour-test.xlsx'   # r对路径进行转义，windows需要
     raw_data = pd.read_excel(file_path, header=0)  # header=0表示第一行是表头，就自动去除了
@@ -218,20 +234,9 @@ def prepare_full_data(window=80):
     test_split_data=np.zeros((int((num_test-1)/window),window,10))  #num_test-30
     test_slide_data=np.zeros((num_test-window-1,window,10))
 
-    col_max = np.max(raw_data[:, 0:10], axis=0)
-    col_min = np.min(raw_data[:, 0:10], axis=0)
-    
-    # 保存归一化参数
-    normalization_params = {
-        'max_values': col_max,
-        'min_values': col_min
-    }
-    np.save(os.path.join(os.path.dirname(file_path), 'normalization_params_test.npy'), normalization_params)
-    # 在测试数据处理部分
-    # 使用训练数据的归一化参数
-    for i in range(num_test):
-        for j in range(10):
-            raw_data[i, j] = (raw_data[i, j] - col_min[j]) / (col_max[j] - col_min[j])
+    raw_data[:,0:4] = normalize_first_four(raw_data[:,0:4], motor_cmd_max, motor_cmd_min)
+    # raw_data[:,4:7] = normalize_first_four(raw_data[:,4:7], pos_max, pos_min)
+    # raw_data[:,7:10] = normalize_first_four(raw_data[:,7:10], euler_max, euler_min)
     
     j=1
     for i in range(int(num_test-window-1)):
@@ -241,20 +246,12 @@ def prepare_full_data(window=80):
     for i in range(int((num_test-1)/window)):  #num_test-30
         test_split_label[i,:,:]=raw_data[j:j+window,4:10]    #按时间窗划分数据集
         j=j+window
-    #数据归一化过程，除最大值
-    # for i in range(num_test):
-    #     raw_data[i, 0] = raw_data[i, 0]/198.8755
-    #     raw_data[i, 1] = raw_data[i, 1] / 183.4
-    #     raw_data[i, 2] = raw_data[i, 2] / 183.5725
-    #     raw_data[i, 3] = raw_data[i, 3] / 184.4340
-    
     j=1
     for i in range(int(num_test-window-1)):
         test_slide_data[i,:,0:4]=raw_data[j:j+window,0:4]
         for k in range(window):
             test_slide_data[i,k,4:10]=raw_data[j-1,4:10]
         j=j+1
-        
     j=1
     for i in range(int((num_test-1)/window)):  #num_test-30
         test_split_data[i,:,0:4]=raw_data[j:j+window,0:4]    #按时间窗划分数据集
@@ -292,10 +289,9 @@ def prepare_full_data(window=80):
     test_split_dataset=MiningDataset(test_split_data,test_split_label)
     train_size = int(0.8 * len(test_slide_dataset))
     val_size = len(test_slide_dataset) - train_size
-    train_dataset, val_dataset = torch.utils.data.random_split(test_slide_dataset, [train_size, val_size])
+    # train_dataset, val_dataset = torch.utils.data.random_split(test_slide_dataset, [train_size, val_size])
 
-    return train_dataset,val_dataset
-    # return train_slide_dataset,train_split_dataset,test_slide_dataset,test_split_dataset
+    return train_slide_dataset,train_split_dataset,test_slide_dataset,test_split_dataset
 
 if __name__=="__main__":
 # 统计并保存数据

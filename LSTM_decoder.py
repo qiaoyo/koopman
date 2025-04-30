@@ -7,17 +7,23 @@ from torch.utils.data import Dataset, DataLoader
 import random
 
 class MultiScaleTimeSeriesModel(nn.Module):
-    def __init__(self, input_size=1, output_dim=1, hidden_size=64, lstm_layers=1, fusion_size=128,
+    def __init__(self, input_dim=1, output_dim=1, hidden_size=64, lstm_layers=1, fusion_size=128,
                  transformer_d_model=64, transformer_nhead=4, transformer_layers=2, dropout=0.3):
         super(MultiScaleTimeSeriesModel, self).__init__()
         self.hidden_size = hidden_size
-        self.input_size = input_size
-
+        self.input_size = input_dim
+        self.transformer_d_model = transformer_d_model  # 将参数保存为类属性
+        
         # LSTM编码器部分保持不变
-        self.lstm_scale1 = nn.LSTM(input_size, hidden_size, lstm_layers, batch_first=True)
-        self.lstm_scale2 = nn.LSTM(input_size, hidden_size, lstm_layers, batch_first=True)
-        self.lstm_scale3 = nn.LSTM(input_size, hidden_size, lstm_layers, batch_first=True)
-
+        self.lstm_scale1 = nn.LSTM(input_dim, hidden_size, lstm_layers, batch_first=True)
+        self.lstm_scale2 = nn.LSTM(input_dim, hidden_size, lstm_layers, batch_first=True)
+        self.lstm_scale3 = nn.LSTM(input_dim, hidden_size, lstm_layers, batch_first=True)
+        
+        # Flatten parameters for better memory usage
+        self.lstm_scale1.flatten_parameters()
+        self.lstm_scale2.flatten_parameters()
+        self.lstm_scale3.flatten_parameters()
+        
         self.fusion_linear = nn.Linear(hidden_size * 3, fusion_size)
         self.relu = nn.ReLU()
         self.proj_linear = nn.Linear(fusion_size, transformer_d_model)
@@ -33,6 +39,11 @@ class MultiScaleTimeSeriesModel(nn.Module):
             num_layers=transformer_layers
         )
 
+        self.ffn1=nn.Sequential(
+            nn.Linear(64,64),
+            nn.ReLU(),
+            nn.Linear(64,output_dim)
+        )
         # 将简单的FFN替换为更复杂的结构
         self.ffn = nn.Sequential(
             # 第一层：扩展维度
@@ -59,28 +70,13 @@ class MultiScaleTimeSeriesModel(nn.Module):
             # 最后输出层
             nn.Linear(64, output_dim)
         )
-
-class ResidualBlock(nn.Module):
-    def __init__(self, dim, dropout):
-        super(ResidualBlock, self).__init__()
-        self.block = nn.Sequential(
-            nn.Linear(dim, dim),
-            nn.LayerNorm(dim),
-            nn.ReLU(),
-            nn.Dropout(dropout),
-            nn.Linear(dim, dim)
-        )
-        self.layer_norm = nn.LayerNorm(dim)
-        
-    def forward(self, x):
-        residual = x
-        out = self.block(x)
-        out += residual  # 残差连接
-        out = self.layer_norm(out)
-        return out
-
     def forward(self, x):
         batch_size, seq_length, seq_dim = x.shape
+
+        # Flatten parameters before each forward pass
+        self.lstm_scale1.flatten_parameters()
+        self.lstm_scale2.flatten_parameters()
+        self.lstm_scale3.flatten_parameters()
 
         # 多尺度LSTM特征提取
         x_scale1 = x
@@ -102,7 +98,8 @@ class ResidualBlock(nn.Module):
         
         # 准备Transformer Decoder的输入
         memory = self.proj_linear(fused_feature).unsqueeze(1)  # 编码器输出
-        tgt = torch.zeros(batch_size, seq_length, transformer_d_model).to(x.device)  # 目标序列初始化
+        # 使用self.transformer_d_model替代transformer_d_model
+        tgt = torch.zeros(batch_size, seq_length, self.transformer_d_model).to(x.device)  # 目标序列初始化
         
         # 生成掩码以确保自回归性质
         tgt_mask = nn.Transformer.generate_square_subsequent_mask(seq_length).to(x.device)
@@ -120,3 +117,23 @@ class ResidualBlock(nn.Module):
         out = x.view(batch_size, seq_length, -1)
         
         return out
+
+class ResidualBlock(nn.Module):
+    def __init__(self, dim, dropout):
+        super(ResidualBlock, self).__init__()
+        self.block = nn.Sequential(
+            nn.Linear(dim, dim),
+            nn.LayerNorm(dim),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(dim, dim)
+        )
+        self.layer_norm = nn.LayerNorm(dim)
+        
+    def forward(self, x):
+        residual = x
+        out = self.block(x)
+        out += residual  # 残差连接
+        out = self.layer_norm(out)
+        return out
+
