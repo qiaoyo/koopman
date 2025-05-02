@@ -26,28 +26,14 @@ if __name__=="__main__":
     set_device()
     set_seed(seed=seed)
 
-    train_slide_dataset,train_split_dataset,test_slide_dataset,test_split_dataset=prepare_full_data(window=window)
+    train_slide_dataset=prepare_merged_data(window=window)
 
     train_slide_loader = torch.utils.data.DataLoader(dataset=train_slide_dataset,
                            batch_size=batch_size,
                            shuffle=True, 
                            drop_last=True,  
                            pin_memory=True)  
-    train_split_loader = torch.utils.data.DataLoader(dataset=train_split_dataset,
-                                 batch_size=batch_size,
-                                 shuffle=True,
-                                 drop_last=True,
-                                 pin_memory=True)
-    test_slide_loader = torch.utils.data.DataLoader(dataset=test_slide_dataset,
-                               batch_size=batch_size,
-                               shuffle=False,  
-                               drop_last=False,
-                               pin_memory=True)
-    test_split_loader = torch.utils.data.DataLoader(dataset=test_split_dataset,
-                                batch_size=batch_size,
-                                shuffle=False,
-                                drop_last=False,
-                                pin_memory=True)
+   
 
     from LSTM_decoder import MultiScaleTimeSeriesModel
     model = MultiScaleTimeSeriesModel(input_dim=10, output_dim=6)
@@ -64,10 +50,10 @@ if __name__=="__main__":
         checkpoint = torch.load(checkpoint_path)
         model.load_state_dict(checkpoint['model_state_dict'])
         print(f"加载模型成功，从第{checkpoint['epoch'] + 1}轮继续训练")
-        print(f"已加载模型的测试损失: {checkpoint['test_loss']:.4f}")
-        print(f"已加载模型的MAE: {checkpoint['test_mae']:.4f}")
-        print(f"已加载模型的RMSE: {checkpoint['test_rmse']:.4f}")
-        best_loss = checkpoint['test_loss']  # 更新最佳损失值
+        # print(f"已加载模型的测试损失: {checkpoint['test_loss']:.4f}")
+        # print(f"已加载模型的MAE: {checkpoint['test_mae']:.4f}")
+        # print(f"已加载模型的RMSE: {checkpoint['test_rmse']:.4f}")
+        # best_loss = checkpoint['test_loss']  # 更新最佳损失值
     else:
         print("未找到已保存的模型，将从头开始训练")
         best_loss = float('inf')
@@ -84,13 +70,14 @@ if __name__=="__main__":
     best_loss = float('inf')
 
     train_losses = []
-    test_losses = []
     save_freq = 50
     
     # 早停参数
     patience = 10  # 容忍测试集性能不提升的轮数
     patience_counter = 0  # 计数器
-    
+
+    train_dimension_errors = [[] for _ in range(6)]  # 存储训练集6个维度的误差
+        
     for epoch in range(num_epochs):
         model.train()
         epoch_loss = []
@@ -103,7 +90,10 @@ if __name__=="__main__":
             optimizer.zero_grad()
             prediction = model(ini_datas) 
             loss = loss_function(prediction, labels)
-            
+            for dim in range(6):
+                    dim_error = torch.mean(torch.abs(prediction[..., dim] - labels[..., dim]))
+                    train_dimension_errors[dim].append(dim_error.item())
+        
             loss.backward()
             optimizer.step()
             
@@ -118,81 +108,26 @@ if __name__=="__main__":
         print(f"\nEpoch [{epoch+1}/{num_epochs}], Train Loss: {avg_loss:.4f}")
         
         # 验证阶段
-        model.eval()
-        test_loss = []
-        test_mae = []
-        test_rmse = []
-        dimension_errors = [[] for _ in range(6)]  # 存储6个维度的误差
-        
-        with torch.no_grad():
-            for ini_datas, labels in test_slide_loader:
-                ini_datas = ini_datas.cuda()
-                labels = labels.cuda()
-                output = model(ini_datas)
-                
-                loss = loss_function(output, labels)
-                mae = torch.mean(torch.abs(output - labels))
-                rmse = torch.sqrt(torch.mean((output - labels) ** 2))
-                
-                test_loss.append(loss.item())
-                test_mae.append(mae.item())
-                test_rmse.append(rmse.item())
-                
-                # 计算每个维度的误差
-                for dim in range(6):
-                    dim_error = torch.mean(torch.abs(output[..., dim] - labels[..., dim]))
-                    dimension_errors[dim].append(dim_error.item())
-        
-        avg_test_loss = np.mean(test_loss)
-        test_losses.append(avg_test_loss)
-        avg_test_mae = np.mean(test_mae)
-        avg_test_rmse = np.mean(test_rmse)
         
         # 验证阶段前，添加训练集误差计算
-        model.eval()  # 临时设置为评估模式以计算训练误差
-        train_dimension_errors = [[] for _ in range(6)]  # 存储训练集6个维度的误差
-        
-        with torch.no_grad():
-            for ini_datas, labels in train_slide_loader:
-                ini_datas = ini_datas.cuda()
-                labels = labels.cuda()
-                output = model(ini_datas)
-                
-                # 计算每个维度的误差
-                for dim in range(6):
-                    dim_error = torch.mean(torch.abs(output[..., dim] - labels[..., dim]))
-                    train_dimension_errors[dim].append(dim_error.item())
         
         # 计算训练集每个维度的平均误差
         train_avg_dimension_errors = [np.mean(errors) for errors in train_dimension_errors]
         train_first_three_avg = np.mean(train_avg_dimension_errors[:3])
         train_last_three_avg = np.mean(train_avg_dimension_errors[3:])
         
-        # 验证阶段
-        # 计算每个维度的平均误差
-        avg_dimension_errors = [np.mean(errors) for errors in dimension_errors]
-        # 计算前三个维度和后三个维度的平均误差
-        first_three_avg = np.mean(avg_dimension_errors[:3])
-        last_three_avg = np.mean(avg_dimension_errors[3:])
-        
-        print(f"Test Metrics - Loss: {avg_test_loss:.4f}, MAE: {avg_test_mae:.4f}, RMSE: {avg_test_rmse:.4f}")
-        print(f"前三个维度平均误差: {first_three_avg:.4f} m/s")
-        print(f"后三个维度平均误差: {last_three_avg:.4f} rad/s {last_three_avg*180/3.14 }deg/s")
-        
+
         # 检查是否需要保存最佳模型和早停
-        if avg_test_loss < best_loss:
-            best_loss = avg_test_loss
+        if avg_loss < best_loss:
+            best_loss = avg_loss
             patience_counter = 0  # 重置计数器
-            
+           
             # 保存最佳模型时的详细信息到txt文件
-            info_path = os.path.join(save_dir, f'best_model_info_0421.txt')
+            info_path = os.path.join(save_dir, f'best_model_info_0430.txt')
             with open(info_path, 'w') as f:
                 f.write(f"最佳模型信息 (Epoch {epoch+1}):\n")
                 f.write(f"训练损失: {avg_loss:.4f}\n")
-                f.write(f"测试损失: {avg_test_loss:.4f}\n")
-                f.write(f"测试MAE: {avg_test_mae:.4f}\n")
-                f.write(f"测试RMSE: {avg_test_rmse:.4f}\n")
-                
+
                 # 添加训练集误差信息
                 f.write("\n训练集每个维度的误差:\n")
                 for dim, error in enumerate(train_avg_dimension_errors):
@@ -204,28 +139,14 @@ if __name__=="__main__":
                 f.write(f"训练集后三个维度平均误差(角速度): {train_last_three_avg:.4f} rad/s ({train_last_three_avg*180/3.14:.4f} deg/s)\n")
                 
                 # 添加测试集误差信息
-                f.write("\n测试集每个维度的误差:\n")
-                for dim, error in enumerate(avg_dimension_errors):
-                    if dim < 3:
-                        f.write(f"维度 {dim+1} (速度): {error:.4f} m/s\n")
-                    else:
-                        f.write(f"维度 {dim+1} (角速度): {error:.4f} rad/s ({error*180/3.14:.4f} deg/s)\n")
-                f.write(f"\n测试集前三个维度平均误差(速度): {first_three_avg:.4f} m/s\n")
-                f.write(f"测试集后三个维度平均误差(角速度): {last_three_avg:.4f} rad/s ({last_three_avg*180/3.14:.4f} deg/s)\n")
-            
+                
             # 保存模型和相关参数
-            model_path = os.path.join(save_dir, f'best_model_0421.pth')
+            model_path = os.path.join(save_dir, f'best_model_0430.pth')
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
-                'train_loss': avg_loss,
-                'test_loss': avg_test_loss,
-                'test_mae': avg_test_mae,
-                'test_rmse': avg_test_rmse,
-                'dimension_errors': avg_dimension_errors,
-                'first_three_avg': first_three_avg,
-                'last_three_avg': last_three_avg
+                'train_loss': avg_loss
             }, model_path)
             print(f"Best model saved at epoch {epoch+1}")
         else:
@@ -237,10 +158,6 @@ if __name__=="__main__":
     # 保存训练历史
     history = {
         'train_losses': train_losses,
-        'test_losses': test_losses,
-        'final_test_loss': avg_test_loss,
-        'final_test_mae': avg_test_mae,
-        'final_test_rmse': avg_test_rmse
     }
     np.save(os.path.join(save_dir, 'training_history_0421.npy'), history)
     
@@ -253,9 +170,7 @@ if __name__=="__main__":
              linestyle='-', markersize=8, markerfacecolor='white')
     
     # 绘制测试损失，使用红色线条和方形标记
-    plt.plot(epochs, test_losses, label='Test Loss', color='red', marker='s', 
-             linestyle='-', markersize=8, markerfacecolor='white')
-    
+   
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.title('Training and Test Loss vs. Epoch')

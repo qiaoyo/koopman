@@ -293,6 +293,134 @@ def prepare_full_data(window=80):
 
     return train_slide_dataset,train_split_dataset,test_slide_dataset,test_split_dataset
 
+def prepare_data_with_folder(folder=0, window=80,return_split=False):
+    """
+    读取指定文件夹中的数据并处理
+    Args:
+        folder: 文件夹编号，默认为0
+        window: 时间窗口大小，默认为80
+    Returns:
+        slide_dataset: 滑动窗口数据集
+        split_dataset: 分割数据集
+    """ 
+    base_path = r"C:\Users\Administrator\Desktop\koopman-data\data\flights"
+    folder_path = os.path.join(base_path, str(folder))
+    target_files = ['Motors_CMD.npy', 'Pos.npy', 'Euler.npy']
+    
+    # 检查文件夹是否存在
+    if not os.path.exists(folder_path):
+        raise ValueError(f"文件夹 {folder_path} 不存在")
+    
+    # 读取数据
+    data_dict = {}
+    for file_name in target_files:
+        file_path = os.path.join(folder_path, file_name)
+        if not os.path.exists(file_path):
+            raise ValueError(f"文件 {file_path} 不存在")
+        data = np.load(file_path)
+        data_dict[file_name.split('.')[0]] = data
+    
+    # 获取数据长度
+    data_length = data_dict['Motors_CMD'].shape[0]
+    
+    # 加载统计数据进行归一化
+    loaded_stats = load_flight_stats()
+    motor_cmd_max = loaded_stats['Motors_CMD']['max']
+    motor_cmd_min = loaded_stats['Motors_CMD']['min']
+    
+    # 归一化Motors_CMD数据
+    data_dict['Motors_CMD'] = normalize_first_four(
+        data_dict['Motors_CMD'], 
+        motor_cmd_max, 
+        motor_cmd_min
+    )
+    
+    # 创建滑动窗口数据集
+    num_slide_samples = data_length - window - 1
+    slide_data = np.zeros((num_slide_samples, window, 10))
+    slide_label = np.zeros((num_slide_samples, window, 6))
+    
+    # 创建分割数据集
+    num_split_samples = (data_length - 1) // window
+    split_data = np.zeros((num_split_samples, window, 10))
+    split_label = np.zeros((num_split_samples, window, 6))
+    
+    # 填充滑动窗口数据
+    j = 1
+    for i in range(num_slide_samples):
+        # 填充输入数据
+        slide_data[i, :, 0:4] = data_dict['Motors_CMD'][j:j+window]
+        # 填充初始状态
+        for k in range(window):
+            slide_data[i, k, 4:7] = data_dict['Pos'][j-1]
+            slide_data[i, k, 7:10] = data_dict['Euler'][j-1]
+        # 填充标签
+        slide_label[i, :, 0:3] = data_dict['Pos'][j:j+window]
+        slide_label[i, :, 3:6] = data_dict['Euler'][j:j+window]
+        j += 1
+    
+    slide_data = time_series_augmentation(slide_data)
+    
+    # 转换为torch张量
+    slide_data = torch.from_numpy(slide_data).float()
+    slide_label = torch.from_numpy(slide_label).float()
+
+    # 创建数据集
+    slide_dataset = MiningDataset(slide_data, slide_label)
+   
+    if return_split==True:
+    # 填充分割数据
+        j = 1
+        for i in range(num_split_samples):
+            # 填充输入数据
+            split_data[i, :, 0:4] = data_dict['Motors_CMD'][j:j+window]
+            # 填充初始状态
+            for k in range(window):
+                split_data[i, k, 4:7] = data_dict['Pos'][j-1]
+                split_data[i, k, 7:10] = data_dict['Euler'][j-1]
+            # 填充标签
+            split_label[i, :, 0:3] = data_dict['Pos'][j:j+window]
+            split_label[i, :, 3:6] = data_dict['Euler'][j:j+window]
+            j += window
+    
+        split_data = torch.from_numpy(split_data).float()
+        split_label = torch.from_numpy(split_label).float()   
+        split_dataset = MiningDataset(split_data, split_label)
+
+        return slide_dataset, split_dataset
+    return slide_dataset
+
+def prepare_merged_data(window=80):
+    '''
+    将滑动窗口的训练和测试数据合并为一个数据集
+    
+    参数:
+        window: 时间窗口大小，默认为80
+    
+    返回:
+        merged_slide_dataset: 合并后的滑动窗口数据集
+        train_split_dataset: 训练集分割数据
+        test_split_dataset: 测试集分割数据
+    '''
+    # 获取原始数据集
+    train_slide_dataset, train_split_dataset, test_slide_dataset, test_split_dataset = prepare_full_data(window=window)
+    
+    # 获取训练集和测试集的数据和标签
+    train_data = train_slide_dataset.data
+    train_labels = train_slide_dataset.label
+    test_data = test_slide_dataset.data
+    test_labels = test_slide_dataset.label
+    
+    # 合并数据和标签
+    merged_data = torch.cat([train_data, test_data], dim=0)
+    merged_labels = torch.cat([train_labels, test_labels], dim=0)
+    
+    # 创建合并后的数据集
+    merged_slide_dataset = MiningDataset(merged_data, merged_labels)
+    
+    return merged_slide_dataset
+
+
 if __name__=="__main__":
 # 统计并保存数据
     stats = analyze_flight_data()
