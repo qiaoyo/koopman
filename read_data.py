@@ -16,40 +16,40 @@ if __name__ == '__main__':
     final_test_rmse = history['final_test_rmse']
 
     # 打印最终的评估指标
-    print("训练结果总结：")
-    print(f"最终测试损失: {final_test_loss:.4f}")
-    print(f"最终测试MAE: {final_test_mae:.4f}")
-    print(f"最终测试RMSE: {final_test_rmse:.4f}")
+    print("Training Results Summary:")
+    print(f"Final test loss: {final_test_loss:.4f}")
+    print(f"Final test MAE: {final_test_mae:.4f}")
+    print(f"Final test RMSE: {final_test_rmse:.4f}")
 
     # 计算并打印最佳epoch和对应的损失
     best_epoch = np.argmin(test_losses)
     best_test_loss = np.min(test_losses)
-    print(f"\n最佳表现：")
-    print(f"最佳epoch: {best_epoch + 1}")
-    print(f"最佳测试损失: {best_test_loss:.4f}")
+    print(f"\nBest Performance:")
+    print(f"Best epoch: {best_epoch + 1}")
+    print(f"Best test loss: {best_test_loss:.4f}")
 
     # 计算训练过程中的一些统计信息
-    print("\n训练过程统计：")
-    print(f"平均训练损失: {np.mean(train_losses):.4f}")
-    print(f"平均测试损失: {np.mean(test_losses):.4f}")
-    print(f"训练损失标准差: {np.std(train_losses):.4f}")
-    print(f"测试损失标准差: {np.std(test_losses):.4f}")
+    print("\nTraining Process Statistics:")
+    print(f"Average training loss: {np.mean(train_losses):.4f}")
+    print(f"Average test loss: {np.mean(test_losses):.4f}")
+    print(f"Training loss std: {np.std(train_losses):.4f}")
+    print(f"Test loss std: {np.std(test_losses):.4f}")
 
     # 绘制损失曲线
     plt.figure(figsize=(10, 6))
     epochs = range(1, len(train_losses) + 1)
 
     # 绘制训练损失
-    plt.plot(epochs, train_losses, 'b-o', label='训练损失', markersize=4)
+    plt.plot(epochs, train_losses, 'b-o', label='Training Loss', markersize=4)
     # 绘制测试损失
-    plt.plot(epochs, test_losses, 'r-s', label='测试损失', markersize=4)
+    plt.plot(epochs, test_losses, 'r-s', label='Test Loss', markersize=4)
 
     # 标注最佳点
-    plt.plot(best_epoch + 1, best_test_loss, 'g*', markersize=15, label='最佳测试损失   ')
+    plt.plot(best_epoch + 1, best_test_loss, 'g*', markersize=15, label='Best Test Loss')
 
-    plt.title('训练和测试损失曲线')
+    plt.title('Training and Test Loss Curves')
     plt.xlabel('Epoch')
-    plt.ylabel('损失')
+    plt.ylabel('Loss')
     plt.grid(True)
     plt.legend()
 

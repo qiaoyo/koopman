@@ -4,19 +4,19 @@ import numpy as np
 import os
 def load_mat_file(file_path):
     """
-    读取.mat文件并转换为Python字典格式
+    Read .mat file and convert to Python dictionary format
     
-    参数:
-        file_path: .mat文件的路径
+    Args:
+        file_path: Path to .mat file
         
-    返回:
-        转换后的Python字典
+    Returns:
+        Converted Python dictionary
     """
     try:
-        # 读取.mat文件
+        # Read .mat file
         mat_data = sio.loadmat(file_path)
         
-        # 移除特殊键（MATLAB自动生成的元数据）
+        # Remove special keys (MATLAB auto-generated metadata)
         for key in ['__header__', '__version__', '__globals__']:
             if key in mat_data:
                 del mat_data[key]
@@ -24,7 +24,7 @@ def load_mat_file(file_path):
         return mat_data
         
     except Exception as e:
-        print(f"读取.mat文件时出错: {str(e)}")
+        print(f"Error reading .mat file: {str(e)}")
         return None
 
 def convert_mat_to_numpy(mat_data,save_path):
@@ -71,20 +71,20 @@ def convert_mat_to_numpy(mat_data,save_path):
 def mat2npy():
     file_path = r"C:\Users\Administrator\Desktop\koopman-data\data\AscTec_Pelican_Flight_Dataset.mat"
     save_path=r"C:\Users\Administrator\Desktop\koopman-data\data"
-    # 读取.mat文件
+    # Read .mat file
     mat_data = load_mat_file(file_path)
     
     if mat_data is not None:
-        # 打印原始数据的键
-        print("Mat文件中的变量:")
+        # Print original data keys
+        print("Variables in Mat file:")
         for key in mat_data.keys():
             print(f"- {key}: {type(mat_data[key])}")
         
-        # 转换为numpy格式
+        # Convert to numpy format
         numpy_data = convert_mat_to_numpy(mat_data,save_path)
         
-        # 打印转换后的数据信息
-        print("\n转换后的数据:")
+        # Print converted data info
+        print("\nConverted data:")
         for key, value in numpy_data.items():
             print(f"- {key}: value: {value}")
 

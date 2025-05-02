@@ -117,7 +117,7 @@ def analyze_flight_data():
     
     return stats
 
-def load_flight_stats():
+def load_flight_stats(show_stats=False):
     """
     读取已保存的飞行数据统计结果
     """
@@ -131,11 +131,12 @@ def load_flight_stats():
     stats = np.load(stats_path, allow_pickle=True).item()
     
     # 打印加载的结果
-    print("\n加载的数据统计结果:")
-    for key in stats:
-        print(f"\n{key}:")
-        print(f"最大值: {stats[key]['max']}")
-        print(f"最小值: {stats[key]['min']}")
+    if show_stats:
+        print("\n加载的数据统计结果:")
+        for key in stats:
+            print(f"\n{key}:")
+            print(f"最大值: {stats[key]['max']}")
+            print(f"最小值: {stats[key]['min']}")
     
     return stats
 
@@ -293,30 +294,35 @@ def prepare_full_data(window=80):
 
     return train_slide_dataset,train_split_dataset,test_slide_dataset,test_split_dataset
 
-def prepare_data_with_folder(folder=0, window=80,return_split=False):
+def prepare_data_with_folder(folder=0, window=80, return_split=False):
     """
-    读取指定文件夹中的数据并处理
+    Read and process data from specified folder
     Args:
-        folder: 文件夹编号，默认为0
-        window: 时间窗口大小，默认为80
+        folder: Folder number, default 0
+        window: Time window size, default 80
+        return_split: Whether to return split dataset, default False
     Returns:
-        slide_dataset: 滑动窗口数据集
-        split_dataset: 分割数据集
+        slide_dataset: Sliding window dataset
+        split_dataset: Split dataset (if return_split=True)
     """ 
+    from tqdm import tqdm
+    
     base_path = r"C:\Users\Administrator\Desktop\koopman-data\data\flights"
     folder_path = os.path.join(base_path, str(folder))
     target_files = ['Motors_CMD.npy', 'Pos.npy', 'Euler.npy']
     
-    # 检查文件夹是否存在
+    # Check if folder exists
     if not os.path.exists(folder_path):
-        raise ValueError(f"文件夹 {folder_path} 不存在")
+        raise ValueError(f"Folder {folder_path} does not exist")
     
-    # 读取数据
+    print(f"Loading data from group {folder}...")
+    
+    # Read data
     data_dict = {}
-    for file_name in target_files:
+    for file_name in tqdm(target_files, desc="Loading data files"):
         file_path = os.path.join(folder_path, file_name)
         if not os.path.exists(file_path):
-            raise ValueError(f"文件 {file_path} 不存在")
+            raise ValueError(f"File {file_path} does not exist")
         data = np.load(file_path)
         data_dict[file_name.split('.')[0]] = data
     
@@ -328,6 +334,7 @@ def prepare_data_with_folder(folder=0, window=80,return_split=False):
     motor_cmd_max = loaded_stats['Motors_CMD']['max']
     motor_cmd_min = loaded_stats['Motors_CMD']['min']
     
+    print("Normalize data...")
     # 归一化Motors_CMD数据
     data_dict['Motors_CMD'] = normalize_first_four(
         data_dict['Motors_CMD'], 
@@ -340,14 +347,16 @@ def prepare_data_with_folder(folder=0, window=80,return_split=False):
     slide_data = np.zeros((num_slide_samples, window, 10))
     slide_label = np.zeros((num_slide_samples, window, 6))
     
-    # 创建分割数据集
-    num_split_samples = (data_length - 1) // window
-    split_data = np.zeros((num_split_samples, window, 10))
-    split_label = np.zeros((num_split_samples, window, 6))
-    
+    print("Fill slide window data...")
     # 填充滑动窗口数据
-    j = 1
-    for i in range(num_slide_samples):
+    for i in tqdm(range(num_slide_samples), desc="deal slide data"):
+        j = i + 1
+        # 填充输入数据
+        slide_data[i, :, 0:4] = data_dict['Motors_CMD'][j:j+window]
+        # 填充初始状态
+        for k in range(window):
+            slide_data[i, k, 4:7] = data_dict['Pos'][j-1]
+        j = i + 1
         # 填充输入数据
         slide_data[i, :, 0:4] = data_dict['Motors_CMD'][j:j+window]
         # 填充初始状态
@@ -357,21 +366,28 @@ def prepare_data_with_folder(folder=0, window=80,return_split=False):
         # 填充标签
         slide_label[i, :, 0:3] = data_dict['Pos'][j:j+window]
         slide_label[i, :, 3:6] = data_dict['Euler'][j:j+window]
-        j += 1
     
+    print("Augment data...")
     slide_data = time_series_augmentation(slide_data)
     
     # 转换为torch张量
+    print("numpy 2 torch tensor...")
     slide_data = torch.from_numpy(slide_data).float()
     slide_label = torch.from_numpy(slide_label).float()
 
     # 创建数据集
     slide_dataset = MiningDataset(slide_data, slide_label)
    
-    if return_split==True:
-    # 填充分割数据
-        j = 1
-        for i in range(num_split_samples):
+    if return_split:
+        print("deal split data...")
+        # 创建分割数据集
+        num_split_samples = (data_length - 1) // window
+        split_data = np.zeros((num_split_samples, window, 10))
+        split_label = np.zeros((num_split_samples, window, 6))
+        
+        # 填充分割数据
+        for i in tqdm(range(num_split_samples), desc="deal split data"):
+            j = i * window + 1
             # 填充输入数据
             split_data[i, :, 0:4] = data_dict['Motors_CMD'][j:j+window]
             # 填充初始状态
@@ -381,13 +397,15 @@ def prepare_data_with_folder(folder=0, window=80,return_split=False):
             # 填充标签
             split_label[i, :, 0:3] = data_dict['Pos'][j:j+window]
             split_label[i, :, 3:6] = data_dict['Euler'][j:j+window]
-            j += window
     
         split_data = torch.from_numpy(split_data).float()
         split_label = torch.from_numpy(split_label).float()   
         split_dataset = MiningDataset(split_data, split_label)
-
+        
+        print("data done")
         return slide_dataset, split_dataset
+    
+    print("data done")
     return slide_dataset
 
 def prepare_merged_data(window=80):
