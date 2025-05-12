@@ -69,34 +69,23 @@ if __name__=="__main__":
     seed=1023
     window=80
     batch_size=1024
-    lr = 1e-3
+    lr = 1e-4
     num_epochs = 50
     
-    set_device()
+    device=set_device()
     set_seed(seed=seed)
 
-    train_slide_dataset,train_split_dataset,test_slide_dataset,test_split_dataset=prepare_full_data(window=window)
+    test_slide_dataset=prepare_merged_data(folders=[31],window=window,return_split=False,return_norm_data=True)
 
-    train_slide_loader = torch.utils.data.DataLoader(dataset=train_slide_dataset,
-                           batch_size=batch_size,
-                           shuffle=True, 
-                           drop_last=True,  
-                           pin_memory=True)  
-    train_split_loader = torch.utils.data.DataLoader(dataset=train_split_dataset,
-                                 batch_size=batch_size,
-                                 shuffle=True,
-                                 drop_last=True,
-                                 pin_memory=True)
+    
     test_slide_loader = torch.utils.data.DataLoader(dataset=test_slide_dataset,
                                batch_size=batch_size,
                                shuffle=False,  
                                drop_last=False,
                                pin_memory=True)
-    test_split_loader = torch.utils.data.DataLoader(dataset=test_split_dataset,
-                                batch_size=batch_size,
-                                shuffle=False,
-                                drop_last=False,
-                                pin_memory=True)
+    base_path = '/home/pika/koopman-data/data/flights'
+    folder=31
+    norm_data = np.load(os.path.join(base_path, str(folder), 'folder_stats.npy'), allow_pickle=True).item()
 
     from LSTM_decoder import MultiScaleTimeSeriesModel
     model = MultiScaleTimeSeriesModel(input_dim=10, output_dim=6)
@@ -105,12 +94,13 @@ if __name__=="__main__":
     model = model.cuda()
     
     # 加载已保存的模型
-    save_dir = r'C:\Users\Administrator\Desktop\koopman-data\data\LSTM_decoder'
+    
+    save_dir = '/home/pika/koopman-data/data/LSTM_decoder_0503_3'
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
-    checkpoint_path = os.path.join(save_dir, 'best_model_0421.pth')
+    checkpoint_path = os.path.join(save_dir, 'best_model_0503.pth')
     if os.path.exists(checkpoint_path):
-        checkpoint = torch.load(checkpoint_path)
+        checkpoint = torch.load(checkpoint_path,weights_only=False)
         model.load_state_dict(checkpoint['model_state_dict'])
         print(f"加载模型成功，从第{checkpoint['epoch'] + 1}轮继续训练")
         print(f"已加载模型的测试损失: {checkpoint['test_loss']:.4f}")
@@ -123,7 +113,7 @@ if __name__=="__main__":
 
     # 添加L2正则化
     weight_decay = 1e-4  # L2正则化系数
-    optimizer = torch.optim.Adam(model.ffn.parameters(), lr=lr, weight_decay=weight_decay)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     
     # 如果存在，加载优化器状态
     if os.path.exists(checkpoint_path):
@@ -133,13 +123,21 @@ if __name__=="__main__":
     best_loss = float('inf')
 
     train_losses = []
-    test_losses = []
+
     save_freq = 5
     
     # 早停参数
-    patience = 10  # 容忍测试集性能不提升的轮数
+    patience = 20  # 容忍测试集性能不提升的轮数
     patience_counter = 0  # 计数器
     
+    from test_model import test_model
+    
+    print(f"device:{device}")
+    first_three_errors, last_three_errors, avg_loss=test_model(model,test_slide_loader,device,save_dir=None,norm_data=norm_data)
+
+    print(f"first_three_errors:{first_three_errors},last_three_errors:{last_three_errors},avg_loss:{avg_loss}")
+    best_loss=avg_loss
+    train_losses.append(avg_loss)
     for epoch in range(num_epochs):
         model.train()
         epoch_loss = []
@@ -147,76 +145,40 @@ if __name__=="__main__":
         pbar = tqdm(test_slide_loader, desc=f'Epoch {epoch+1}/{num_epochs}')
         
         for i, (ini_datas, labels) in enumerate(pbar):
+            model.train()
             ini_datas = ini_datas.cuda()
             labels = labels.cuda()
             optimizer.zero_grad()
-            prediction = model(ini_datas) 
-            loss = loss_function(prediction, labels)
+            prediction = model(ini_datas)
             
+            loss = loss_function(prediction, labels)
+            epoch_loss.append(loss.item())
             loss.backward()
             optimizer.step()
             
-            epoch_loss.append(loss.item())
             
             if i % save_freq == 0:
                 # train_losses.append(loss.item())  # 保存训练损失
                 pbar.set_postfix({'loss': f'{loss.item():.4f}'})
         
         avg_loss = np.mean(epoch_loss)
-        train_losses.append(avg_loss)  # 保存训练损失
+        # train_losses.append(avg_loss)  # 保存训练损失
         print(f"\nEpoch [{epoch+1}/{num_epochs}], Train Loss: {avg_loss:.4f}")
         
+        first_three_errors, last_three_errors, av_loss=test_model(model,test_slide_loader,device,save_dir=None,norm_data=norm_data)
+        train_losses.append(av_loss)
+        if av_loss<best_loss:
+            best_loss=av_loss
+            png_save_path=os.path.join(save_dir,'test.png')
+            first_three_errors, last_three_errors, _=test_model(model,test_slide_loader,device,save_dir=png_save_path,norm_data=norm_data)
 
-        # 验证阶段前，添加训练集误差计算
-        model.eval()  # 临时设置为评估模式以计算训练误差
-        train_dimension_errors = [[] for _ in range(6)]  # 存储训练集6个维度的误差
-        
-        with torch.no_grad():
-            for ini_datas, labels in train_slide_loader:
-                ini_datas = ini_datas.cuda()
-                labels = labels.cuda()
-                output = model(ini_datas)
-                
-                # 计算每个维度的误差
-                for dim in range(6):
-                    dim_error = torch.mean(torch.abs(output[..., dim] - labels[..., dim]))
-                    train_dimension_errors[dim].append(dim_error.item())
-        
-        # 计算训练集每个维度的平均误差
-        train_avg_dimension_errors = [np.mean(errors) for errors in train_dimension_errors]
-        train_first_three_avg = np.mean(train_avg_dimension_errors[:3])
-        train_last_three_avg = np.mean(train_avg_dimension_errors[3:])
-        
-        # 验证阶段
-        # 计算每个维度的平均误差
-       
-        
-        # 检查是否需要保存最佳模型和早停
-        if avg_loss < best_loss:
-            best_loss = avg_loss
             patience_counter = 0  # 重置计数器
-            
-            # 保存最佳模型时的详细信息到txt文件
-            info_path = os.path.join(save_dir, f'best_model_info_0430_CONTI_ffn.txt')
-            with open(info_path, 'w') as f:
-                f.write(f"最佳模型信息 (Epoch {epoch+1}):\n")
-                f.write(f"训练损失: {avg_loss:.4f}\n")
-                
-                # 添加训练集误差信息
-                f.write("\n训练集每个维度的误差:\n")
-                for dim, error in enumerate(train_avg_dimension_errors):
-                    if dim < 3:
-                        f.write(f"维度 {dim+1} (速度): {error:.4f} m/s\n")
-                    else:
-                        f.write(f"维度 {dim+1} (角速度): {error:.4f} rad/s ({error*180/3.14:.4f} deg/s)\n")
-                f.write(f"\n训练集前三个维度平均误差(速度): {train_first_three_avg:.4f} m/s\n")
-                f.write(f"训练集后三个维度平均误差(角速度): {train_last_three_avg:.4f} rad/s ({train_last_three_avg*180/3.14:.4f} deg/s)\n")
-                
+
                 # 添加测试集误差信息
                 
             
             # 保存模型和相关参数
-            model_path = os.path.join(save_dir, f'best_model_0430_conti_ffn.pth')
+            model_path = os.path.join(save_dir, f'best_model_0503_conti_ffn.pth')
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
@@ -233,15 +195,15 @@ if __name__=="__main__":
     
     # 保存训练历史
     history = {
-        'train_losses': train_losses,
-        'test_losses': test_losses,
+        'train_losses': train_losses
+        
         
     }
     np.save(os.path.join(save_dir, 'training_history_0430_CONT_ffn.npy'), history)
     
     # 绘制训练和测试损失曲线
     plt.figure(figsize=(10, 6))
-    epochs = range(1, epoch + 2)
+    epochs = range(0, epoch + 2)
     
     # 绘制训练损失，使用蓝色线条和圆形标记
     plt.plot(epochs, train_losses, label='Training Loss', color='blue', marker='o', 

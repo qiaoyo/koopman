@@ -27,7 +27,10 @@ class MultiScaleTimeSeriesModel(nn.Module):
         self.fusion_linear = nn.Linear(hidden_size * 3, fusion_size)
         self.relu = nn.ReLU()
         self.proj_linear = nn.Linear(fusion_size, transformer_d_model)
-
+        
+        # 添加LayerNorm层
+        self.fusion_layernorm = nn.LayerNorm(fusion_size)
+        self.transformer_layernorm = nn.LayerNorm(transformer_d_model)
         
         decoder_layer = nn.TransformerDecoderLayer(
             d_model=transformer_d_model,
@@ -44,7 +47,7 @@ class MultiScaleTimeSeriesModel(nn.Module):
             nn.ReLU(),
             nn.Linear(64,output_dim)
         )
-        # 将简单的FFN替换为更复杂的结构
+        
         self.ffn = nn.Sequential(
             # 第一层：扩展维度
             nn.Linear(64, 128),
@@ -95,10 +98,10 @@ class MultiScaleTimeSeriesModel(nn.Module):
         # 特征融合
         fused_feature = torch.cat([feat1, feat2, feat3], dim=-1)
         fused_feature = self.relu(self.fusion_linear(fused_feature))
+        fused_feature = self.fusion_layernorm(fused_feature)  # 添加LayerNorm
         
         # 准备Transformer Decoder的输入
         memory = self.proj_linear(fused_feature).unsqueeze(1)  # 编码器输出
-        # 使用self.transformer_d_model替代transformer_d_model
         tgt = torch.zeros(batch_size, seq_length, self.transformer_d_model).to(x.device)  # 目标序列初始化
         
         # 生成掩码以确保自回归性质
@@ -113,6 +116,7 @@ class MultiScaleTimeSeriesModel(nn.Module):
         
         # 转换维度并进行最终预测
         x = transformer_output.transpose(0, 1).reshape(-1, transformer_output.size(-1))
+        x = self.transformer_layernorm(x)  # 添加LayerNorm
         x = self.ffn(x)
         out = x.view(batch_size, seq_length, -1)
         

@@ -8,8 +8,6 @@ import torch.utils.data as Data
 import matplotlib.pyplot as plt
 from copy import deepcopy
 from torch.nn.utils import weight_norm
-from scipy.stats import pearsonr
-from scipy import spatial
 import time
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
@@ -18,10 +16,11 @@ class MiningDataset():
     """
     A Pytorch Dataset class to be used in PyTorch DataLoader to create batches
     """
-    def __init__(self, data, label):
+    def __init__(self, data, label, norm_data=None):
         self.data = data
         self.label = label
-        self.data_size = int(self.data.shape[0])
+        self.norm_data = norm_data
+        self.len = int(self.data.shape[0])
 
     def __getitem__(self, i):
         """
@@ -34,4 +33,4 @@ class MiningDataset():
         return  con_data, label
 
     def __len__(self):
-        return self.data_size
+        return self.len
