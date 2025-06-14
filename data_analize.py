@@ -341,10 +341,12 @@ def visualize_time_series():
     """
     base_path = r"C:\Users\Administrator\Desktop\koopman-data\data\flights"
     # 创建新的保存目录
-    save_dir = os.path.join(base_path, 'time_series_plots')
+    base_path='/home/pika/koopman-data/data/flights'
+    save_dir = os.path.join(base_path, 'time_series_plots_old')
     os.makedirs(save_dir, exist_ok=True)
     
     target_files = ['Motors_CMD.npy', 'Pos.npy', 'Euler.npy']
+    # target_files = ['Motors.npy', 'Vel.npy', 'pqr.npy']
     
     # 遍历0-53文件夹
     for folder_idx in range(54):

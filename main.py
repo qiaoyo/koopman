@@ -15,255 +15,131 @@ import os
 from utils import *
 from DT_Former import DT_transformer
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+from tqdm import tqdm
+import wandb
+# import swanlab
+from config import sweep_config, wandb_config
+from torch.utils.data import DataLoader, TensorDataset
+from DronePose import DronePosePredictor, CombinedLoss
 
-if __name__=="__main__":
-    seed=1023
-    window=80
-    batch_size=1024
-    lr = 1e-3
-    num_epochs = 100
-    
-    set_device()
-    set_seed(seed=seed)
+def train_model(config=None):
 
-    train_folders = np.load('/home/pika/koopman-data/data/processed/train_folders.npy')
-    test_folders = np.load('/home/pika/koopman-data/data/processed/test_folders.npy')
-    online_folders = np.load('/home/pika/koopman-data/data/processed/online_folders.npy')
-
-    train_slide_dataset=prepare_merged_data(folders=train_folders.tolist(),window=window,return_split=False,return_norm_data=True,augmentation=False)
-    test_slide_dataset=prepare_merged_data(folders=test_folders.tolist(),window=window,return_split=False,return_norm_data=True,augmentation=False)
-
-    train_slide_loader = torch.utils.data.DataLoader(dataset=train_slide_dataset,
-                           batch_size=batch_size,
-                           shuffle=True, 
-                           drop_last=True,  
-                           pin_memory=True)  
-    test_slide_loader = torch.utils.data.DataLoader(dataset=test_slide_dataset,
-                           batch_size=batch_size,
-                           shuffle=True,
-                           drop_last=True,
-                           pin_memory=True)
-    # 加载模型
-
-    from LSTM_decoder import MultiScaleTimeSeriesModel
-    model = MultiScaleTimeSeriesModel(input_dim=10, output_dim=6)
-    
-    model = model.cuda()
-    
-    # 加载已保存的模型
-    save_dir = '/home/pika/koopman-data/data/LSTM_decoder_0512'
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-    checkpoint_path = os.path.join(save_dir, 'best_model_0512.pth')
-    if os.path.exists(checkpoint_path):
-        checkpoint = torch.load(checkpoint_path)
-        model.load_state_dict(checkpoint['model_state_dict'])
-        print(f"加载模型成功，从第{checkpoint['epoch'] + 1}轮继续训练")
-        # print(f"已加载模型的测试损失: {checkpoint['test_loss']:.4f}")
-        # print(f"已加载模型的MAE: {checkpoint['test_mae']:.4f}")
-        # print(f"已加载模型的RMSE: {checkpoint['test_rmse']:.4f}")
-        # best_loss = checkpoint['test_loss']  # 更新最佳损失值
-    else:
-        print("未找到已保存的模型，将从头开始训练")
-        best_loss = float('inf')
-
-    # 添加L2正则化
-    weight_decay = 1e-5  # L2正则化系数
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
-    
-    # 如果存在，加载优化器状态
-    if os.path.exists(checkpoint_path):
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    loss_function = torch.nn.MSELoss(reduction="mean")
-
-    best_loss = float('inf')
-
-    train_losses = []
-    test_losses = []
-    save_freq = 50
-    
-    # 早停参数
-    patience = 10  # 容忍测试集性能不提升的轮数
-    patience_counter = 0  # 计数器
-
-    train_dimension_errors = [[] for _ in range(6)]  # 存储训练集6个维度的误差
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f'Using device: {device}')
+    # 初始化wandb，增加超时时间
+    with wandb.init(config=config, settings=wandb.Settings(init_timeout=300)) as run:
+        # 获取当前配置
+        config = run.config
         
-    for epoch in range(num_epochs):
-        model.train()
-        epoch_loss = 0
-        from tqdm import tqdm
-        pbar = tqdm(train_slide_loader, desc=f'Epoch {epoch+1}/{num_epochs}')
+        # 设置随机种子
+        set_seed(42)
+
+        # 加载数据
+        train_folders = np.load('/home/pika/koopman-data/data/processed/train_folders.npy')
+        test_folders = np.load('/home/pika/koopman-data/data/processed/test_folders.npy')
+        online_folders = np.load('/home/pika/koopman-data/data/processed/online_folders.npy')
+        train_slide_dataset=prepare_merged_data(folders=train_folders.tolist(),window=config.window,return_split=False,return_norm_data=config.require_norm_data,augmentation=True,norm_type=config.norm_type)
+        test_slide_dataset=prepare_merged_data(folders=test_folders.tolist(),window=config.window,return_split=False,return_norm_data=config.require_norm_data,augmentation=True,norm_type=config.norm_type)
+
+
+        train_loader = DataLoader(train_slide_dataset, batch_size=config.batch_size, shuffle=True, num_workers=4, pin_memory=True)
+        val_loader = DataLoader(test_slide_dataset, batch_size=config.batch_size, num_workers=4, pin_memory=True)
         
-        for i, (ini_datas, labels) in enumerate(pbar):
-            ini_datas = ini_datas.cuda()
-            labels = labels.cuda()
-            optimizer.zero_grad()
-            prediction = model(ini_datas) 
-            loss = loss_function(prediction[:,-1,:], labels[:,-1,:])
+        # 初始化模型
+
+        model = DronePosePredictor(
+            input_dim=config.input_dim,
+            output_dim=config.output_dim,
+            gru_hidden_size=config.gru_hidden_size,
+            gru_layers=config.gru_layers,
+            tcn_channels=config.tcn_channels,
+            tcn_layers=config.tcn_layers,
+            dropout=config.dropout
+        ).to(device)
+
+        # 定义损失函数和优化器
+        loss_function = CombinedLoss(
+            alpha=config.alpha
+        ).to(device)
+
+        optimizer = optim.AdamW(
+            model.parameters(),
+            lr=config.learning_rate,
+            weight_decay=config.weight_decay
+        )
+
+        # 学习率调度器
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, mode='min', factor=0.5, patience=5, verbose=True
+        )
+
+        # 训练循环
+        best_val_loss = float('inf')
+
+        for epoch in range(config.epochs):  # 设置最大训练轮数
+            model.train()
+            train_loss = 0
+            pbar = tqdm(train_loader, desc=f'Epoch {epoch+1}/{config.epochs} [Train]')
+            for input_data, labels, folder_idx in pbar:
+                optimizer.zero_grad()
+                input_data = input_data.to(device)
+                labels = labels.to(device)
+                output_data = model(input_data)
+                
+                denorm_output, denorm_label = denormalize_batch(output_data, labels, folder_idx, config.norm_type)
+                denorm_output = denorm_output.to(device)
+                denorm_label = denorm_label.to(device)
+                loss = loss_function(denorm_output, denorm_label)
+                loss.backward()
+                optimizer.step()
+                train_loss += loss.item()*input_data.size(0)
             
-            loss.backward()
-            optimizer.step()
+            # 验证
+            model.eval()
+            val_loss = 0
+            with torch.no_grad():
+                for input_data, labels, folder_idx in val_loader:
+                    input_data = input_data.to(device)
+                    labels = labels.to(device)
+                    output_data = model(input_data)
+                    denorm_output, denorm_label = denormalize_batch(output_data, labels, folder_idx, config.norm_type)
+                    denorm_output = denorm_output.to(device)
+                    denorm_label = denorm_label.to(device)
+                    loss = loss_function(denorm_output, denorm_label)
+                    val_loss += loss.item()*input_data.size(0)
+            # 计算平均损失
+            train_loss /= len(train_loader.dataset)
+            val_loss /= len(val_loader.dataset)
+            print('epoch', epoch, 'train_loss', train_loss)
+            print('epoch', epoch, 'val_loss', val_loss)
+            # 更新学习率
+            scheduler.step(val_loss)
             
-            epoch_loss+=loss.item()*ini_datas.size(0)
+            # 记录指标
+            run.log({
+                'train_loss': train_loss,
+                'val_loss': val_loss,
+                'learning_rate': optimizer.param_groups[0]['lr'],
+                'epoch': epoch
+            })
             
-            if i % save_freq == 0:
-                # train_losses.append(loss.item())  # 保存训练损失
-                pbar.set_postfix({'loss': f'{loss.item():.4f}'})
-        
-        avg_loss = epoch_loss / len(train_slide_loader.dataset)
-        train_losses.append(avg_loss)  # 保存训练损失
-        print(f"\nEpoch [{epoch+1}/{num_epochs}], Train Loss: {avg_loss:.4f}")
-        
-        # 验证阶段
-        model.eval()
-        test_loss = 0
-        test_mae = []
-        test_rmse = []
-        # dimension_errors = [[] for _ in range(6)]  # 存储6个维度的误差
-        
-        with torch.no_grad():
-            for ini_datas, labels in test_slide_loader:
-                ini_datas = ini_datas.cuda()
-                labels = labels.cuda()
-                output = model(ini_datas)
-                
-                loss = loss_function(output[:,-1,:], labels[:,-1,:])
-                mae = torch.mean(torch.abs(output[:,-1,:] - labels[:,-1,:]))
-                rmse = torch.sqrt(torch.mean((output[:,-1,:] - labels[:,-1,:]) ** 2))
-                
-                test_loss+=loss.item()*ini_datas.size(0)
-                test_mae.append(mae.item())
-                test_rmse.append(rmse.item())
-                
-                # 计算每个维度的误差
-                # for dim in range(6):
-                #     dim_error = torch.mean(torch.abs(output[..., dim] - labels[..., dim]))
-                #     dimension_errors[dim].append(dim_error.item())
-        
-        avg_test_loss = test_loss / len(test_slide_loader.dataset)
-        test_losses.append(avg_test_loss)
-        avg_test_mae = np.mean(test_mae)
-        avg_test_rmse = np.mean(test_rmse)
-        
-        # # 验证阶段前，添加训练集误差计算
-        # model.eval()  # 临时设置为评估模式以计算训练误差
-        # train_dimension_errors = [[] for _ in range(6)]  # 存储训练集6个维度的误差
-        
-        # with torch.no_grad():
-        #     for ini_datas, labels in train_slide_loader:
-        #         ini_datas = ini_datas.cuda()
-        #         labels = labels.cuda()
-        #         output = model(ini_datas)
-                
-        #         # 计算每个维度的误差
-        #         for dim in range(6):
-        #             dim_error = torch.mean(torch.abs(output[..., dim] - labels[..., dim]))
-        #             train_dimension_errors[dim].append(dim_error.item())
-        
-        # 计算训练集每个维度的平均误差
-        # train_avg_dimension_errors = [np.mean(errors) for errors in train_dimension_errors]
-        # train_first_three_avg = np.mean(train_avg_dimension_errors[:3])
-        # train_last_three_avg = np.mean(train_avg_dimension_errors[3:])
-        
-        # 验证阶段
-        # 计算每个维度的平均误差
-        # avg_dimension_errors = [np.mean(errors) for errors in dimension_errors]
-        # # 计算前三个维度和后三个维度的平均误差
-        # first_three_avg = np.mean(avg_dimension_errors[:3])
-        # last_three_avg = np.mean(avg_dimension_errors[3:])
-        
-        print(f"Test Metrics - Loss: {avg_test_loss:.4f}, MAE: {avg_test_mae:.4f}, RMSE: {avg_test_rmse:.4f}")
-        # print(f"前三个维度平均误差: {first_three_avg:.4f} m/s")
-        # print(f"后三个维度平均误差: {last_three_avg:.4f} rad/s {last_three_avg*180/3.14 }deg/s")
-        
-        # 检查是否需要保存最佳模型和早停
-        if avg_test_loss < best_loss:
-            best_loss = avg_test_loss
-            patience_counter = 0  # 重置计数器
+            # 保存最佳模型
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                torch.save(model.state_dict(), 'best_model.pth')
+                run.save('best_model.pth')
             
-            # 保存最佳模型时的详细信息到txt文件
-            info_path = os.path.join(save_dir, f'best_model_info_012.txt')
-            with open(info_path, 'w') as f:
-                f.write(f"最佳模型信息 (Epoch {epoch+1}):\n")
-                f.write(f"训练损失: {avg_loss:.4f}\n")
-                f.write(f"测试损失: {avg_test_loss:.4f}\n")
-                f.write(f"测试MAE: {avg_test_mae:.4f}\n")
-                f.write(f"测试RMSE: {avg_test_rmse:.4f}\n")
-                
-                # 添加训练集误差信息
-                # f.write("\n训练集每个维度的误差:\n")
-                # for dim, error in enumerate(train_avg_dimension_errors):
-                #     if dim < 3:
-                #         f.write(f"维度 {dim+1} (速度): {error:.4f} m/s\n")
-                #     else:
-                #         f.write(f"维度 {dim+1} (角速度): {error:.4f} rad/s ({error*180/3.14:.4f} deg/s)\n")
-                # f.write(f"\n训练集前三个维度平均误差(速度): {train_first_three_avg:.4f} m/s\n")
-                # f.write(f"训练集后三个维度平均误差(角速度): {train_last_three_avg:.4f} rad/s ({train_last_three_avg*180/3.14:.4f} deg/s)\n")
-                
-                # 添加测试集误差信息
-                # f.write("\n测试集每个维度的误差:\n")
-                # for dim, error in enumerate(avg_dimension_errors):
-                #     if dim < 3:
-                #         f.write(f"维度 {dim+1} (速度): {error:.4f} m/s\n")
-                #     else:
-                #         f.write(f"维度 {dim+1} (角速度): {error:.4f} rad/s ({error*180/3.14:.4f} deg/s)\n")
-                # f.write(f"\n测试集前三个维度平均误差(速度): {first_three_avg:.4f} m/s\n")
-                # f.write(f"测试集后三个维度平均误差(角速度): {last_three_avg:.4f} rad/s ({last_three_avg*180/3.14:.4f} deg/s)\n")
-            
-            # 保存模型和相关参数
-            model_path = os.path.join(save_dir, f'best_model_0512.pth')
-            torch.save({
-                'epoch': epoch,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'train_loss': avg_loss,
-                'test_loss': avg_test_loss,
-                'test_mae': avg_test_mae,
-                'test_rmse': avg_test_rmse
-                # 'dimension_errors': avg_dimension_errors,
-                # 'first_three_avg': first_three_avg,
-                # 'last_three_avg': last_three_avg
-            }, model_path)
-            print(f"Best model saved at epoch {epoch+1}")
-        else:
-            patience_counter += 1
-            if patience_counter >= patience:
-                print(f"\nEarly stopping triggered after {epoch+1} epochs")
+            # 早停检查
+            if epoch > 20 and val_loss > best_val_loss * 1.15:
+                print(f"Early stopping at epoch {epoch}")
                 break
-    
-    # 保存训练历史
-    history = {
-        'train_losses': train_losses,
-        'test_losses': test_losses,
-        'final_test_loss': avg_test_loss,
-        'final_test_mae': avg_test_mae,
-        'final_test_rmse': avg_test_rmse
-    }
-    np.save(os.path.join(save_dir, 'training_history_0512.npy'), history)
-    
-    # 绘制训练和测试损失曲线
-    plt.figure(figsize=(10, 6))
-    epochs = range(1, epoch + 2)
-    
-    # 绘制训练损失，使用蓝色线条和圆形标记
-    plt.plot(epochs, train_losses, label='Training Loss', color='blue', marker='o', 
-             linestyle='-', markersize=8, markerfacecolor='white')
-    
-    # 绘制测试损失，使用红色线条和方形标记
-    plt.plot(epochs, test_losses, label='Test Loss', color='red', marker='s', 
-             linestyle='-', markersize=8, markerfacecolor='white')
-    
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Training and Test Loss vs. Epoch')
-    plt.legend()
-    plt.grid(True)
-    
-    # 设置x轴刻度为整数
-    plt.xticks(epochs)
-    
-    plt.savefig(os.path.join(save_dir, 'loss_curves_0512.png'))
-    plt.show()
-    plt.close()  # 关闭图像
 
+def main():
+    # 初始化wandb sweep
+    sweep_id = wandb.sweep(sweep_config, project=wandb_config['project'])   
     
+    # 运行sweep
+    wandb.agent(sweep_id, function=train_model, count=50)  # 运行50次实验
+
+if __name__ == "__main__":
+    main()

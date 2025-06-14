@@ -18,7 +18,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 d_model = 64 # Embedding Size
 d_ff = 256 # FeedForward dimension
 d_k = d_v = 128 # dimension of K(=Q), V
-n_layers =  6              # number of Encoder of Decoder Layer
+n_layers =  2              # number of Encoder of Decoder Layer
 n_heads = 6 # num4er of heads in Multi-Head Attention
 
 class PositionalEncoding(nn.Module):

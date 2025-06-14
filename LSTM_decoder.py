@@ -14,6 +14,14 @@ class MultiScaleTimeSeriesModel(nn.Module):
         self.input_size = input_dim
         self.transformer_d_model = transformer_d_model  # 将参数保存为类属性
         
+        # 添加Embedding层
+        # self.embedding = nn.Sequential(
+        #     nn.Linear(input_dim, hidden_size),
+        #     nn.LayerNorm(hidden_size),
+        #     nn.ReLU(),
+        #     nn.Dropout(dropout)
+        # )
+        
         # LSTM编码器部分保持不变
         self.lstm_scale1 = nn.LSTM(input_dim, hidden_size, lstm_layers, batch_first=True)
         self.lstm_scale2 = nn.LSTM(input_dim, hidden_size, lstm_layers, batch_first=True)
@@ -80,6 +88,9 @@ class MultiScaleTimeSeriesModel(nn.Module):
         self.lstm_scale1.flatten_parameters()
         self.lstm_scale2.flatten_parameters()
         self.lstm_scale3.flatten_parameters()
+
+        # 首先通过Embedding层
+        # x = self.embedding(x)  # [batch_size, seq_length, hidden_size]
 
         # 多尺度LSTM特征提取
         x_scale1 = x
