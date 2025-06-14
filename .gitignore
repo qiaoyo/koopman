@@ -1,6 +1,7 @@
 # 排除data文件夹
 data/
 wandb/
+.venv/
 
 # Python缓存文件
 __pycache__/
