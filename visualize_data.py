@@ -32,22 +32,32 @@ for i in range(10):
     plt.plot(x, values, 'k--', alpha=0.3)
 
 # 设置图表属性
-plt.title('数据可视化 - 10组数据的对比', fontsize=14)
-plt.xlabel('数据组', fontsize=12)
-plt.ylabel('数值', fontsize=12)
+# plt.title('', fontsize=14)
+# plt.xlabel('数据组', fontsize=14)
+# plt.ylabel('抓取位姿数量', fontsize=14)
 plt.grid(True, linestyle='--', alpha=0.7)
-plt.legend(['Group 1', 'Group 2', 'Group 3', 'Group 4', 'Group 5'])
+# plt.legend(['Group 1', 'Group 2', 'Group 3', 'Group 4', 'Group 5'])
+
+# 设置y轴为科学计数法
+plt.gca().yaxis.set_major_formatter(plt.ScalarFormatter(useMathText=True))
+plt.gca().yaxis.get_major_formatter().set_powerlimits((0, 0))
+plt.gca().yaxis.get_offset_text().set_fontsize(16)
+plt.gca().yaxis.get_offset_text().set_weight('bold')
 
 # 设置x轴刻度
-plt.xticks(range(1, 11))
+plt.xticks(range(1, 11), fontsize=16, weight='bold')
+plt.yticks(fontsize=16, weight='bold')
 
 # 添加数值标签
 for i in range(10):
     values = [group1[i], group2[i], group3[i], group4[i], group5[i]]
     x = np.ones(5) * (i + 1)
     for j, v in enumerate(values):
-        plt.text(x[j], v, f'{v:.0f}', ha='center', va='bottom')
+        # 将数值转换为k单位
+        value_k = v / 1000
+        plt.text(x[j], v, f'{value_k:.1f}k', ha='center', va='bottom', fontsize=16, weight='bold')
 
 plt.tight_layout()
 plt.savefig('data_visualization.png', dpi=300, bbox_inches='tight')
+plt.show()
 plt.close()

@@ -94,7 +94,7 @@ class TCNPredictor(nn.Module):
         
         return predictions
 
-def create_model(input_dim=10, output_dim=6, num_channels=[64, 128, 256], kernel_size=2, dropout=0.2):
+def create_tcn_model(input_dim=10, output_dim=6, num_channels=[64, 128, 256], kernel_size=2, dropout=0.2):
     """
     创建TCN模型实例
     

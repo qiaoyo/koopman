@@ -1,0 +1,384 @@
+Device set to : NVIDIA GeForce RTX 4090 D
+Model loaded successfully
+正在加载文件夹 20 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 2004.29it/s]
+正在归一化数据...
+Testing:   0%|          | 0/47 [00:00<?, ?it/s]Testing:  13%|█▎        | 6/47 [00:00<00:00, 58.37it/s]Testing:  32%|███▏      | 15/47 [00:00<00:00, 72.41it/s]Testing:  51%|█████     | 24/47 [00:00<00:00, 76.85it/s]Testing:  68%|██████▊   | 32/47 [00:00<00:00, 74.08it/s]Testing:  85%|████████▌ | 40/47 [00:00<00:00, 61.03it/s]Testing: 100%|██████████| 47/47 [00:00<00:00, 47.06it/s]Testing: 100%|██████████| 47/47 [00:00<00:00, 56.23it/s]
+Test first three DOF average error: 0.0628 m/s
+Test last three DOF average error: 0.0793 rad/s (4.5420 deg/s)
+Test average MSE loss: 0.013970
+正在加载文件夹 32 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5938.14it/s]
+正在归一化数据...
+Testing:   0%|          | 0/5 [00:00<?, ?it/s]Testing:  60%|██████    | 3/5 [00:00<00:00, 28.29it/s]Testing: 100%|██████████| 5/5 [00:00<00:00, 30.67it/s]
+Test first three DOF average error: 0.0518 m/s
+Test last three DOF average error: 0.0820 rad/s (4.7007 deg/s)
+Test average MSE loss: 0.009360
+正在加载文件夹 41 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 6037.87it/s]
+正在归一化数据...
+Testing:   0%|          | 0/5 [00:00<?, ?it/s]Testing:  80%|████████  | 4/5 [00:00<00:00, 35.81it/s]Testing: 100%|██████████| 5/5 [00:00<00:00, 33.54it/s]
+Test first three DOF average error: 0.1807 m/s
+Test last three DOF average error: 0.3392 rad/s (19.4332 deg/s)
+Test average MSE loss: 0.158921
+正在加载文件夹 48 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4272.64it/s]
+正在归一化数据...
+Testing:   0%|          | 0/24 [00:00<?, ?it/s]Testing:  38%|███▊      | 9/24 [00:00<00:00, 80.84it/s]Testing:  75%|███████▌  | 18/24 [00:00<00:00, 81.13it/s]Testing: 100%|██████████| 24/24 [00:00<00:00, 81.12it/s]
+Test first three DOF average error: 0.1189 m/s
+Test last three DOF average error: 0.1276 rad/s (7.3081 deg/s)
+Test average MSE loss: 0.037441
+正在加载文件夹 12 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 6061.13it/s]
+正在归一化数据...
+Testing:   0%|          | 0/7 [00:00<?, ?it/s]Testing:  14%|█▍        | 1/7 [00:00<00:00,  7.30it/s]Testing:  86%|████████▌ | 6/7 [00:00<00:00, 25.86it/s]Testing: 100%|██████████| 7/7 [00:00<00:00, 24.93it/s]
+Test first three DOF average error: 0.0593 m/s
+Test last three DOF average error: 0.0781 rad/s (4.4759 deg/s)
+Test average MSE loss: 0.015862
+正在加载文件夹 15 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 3384.32it/s]
+正在归一化数据...
+Testing:   0%|          | 0/38 [00:00<?, ?it/s]Testing:  24%|██▎       | 9/38 [00:00<00:00, 82.15it/s]Testing:  47%|████▋     | 18/38 [00:00<00:00, 82.75it/s]Testing:  71%|███████   | 27/38 [00:00<00:00, 82.93it/s]Testing:  95%|█████████▍| 36/38 [00:00<00:00, 82.98it/s]Testing: 100%|██████████| 38/38 [00:00<00:00, 83.41it/s]
+Test first three DOF average error: 0.0533 m/s
+Test last three DOF average error: 0.0576 rad/s (3.2977 deg/s)
+Test average MSE loss: 0.007889
+正在加载文件夹 39 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 3964.37it/s]
+正在归一化数据...
+Testing:   0%|          | 0/39 [00:00<?, ?it/s]Testing:  13%|█▎        | 5/39 [00:00<00:00, 41.52it/s]Testing:  26%|██▌       | 10/39 [00:00<00:00, 40.66it/s]Testing:  38%|███▊      | 15/39 [00:00<00:00, 40.84it/s]Testing:  51%|█████▏    | 20/39 [00:00<00:00, 36.08it/s]Testing:  74%|███████▍  | 29/39 [00:00<00:00, 50.26it/s]Testing:  97%|█████████▋| 38/39 [00:00<00:00, 60.08it/s]Testing: 100%|██████████| 39/39 [00:00<00:00, 51.30it/s]
+Test first three DOF average error: 0.0569 m/s
+Test last three DOF average error: 0.0591 rad/s (3.3871 deg/s)
+Test average MSE loss: 0.008268
+正在加载文件夹 35 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4562.33it/s]
+正在归一化数据...
+Testing:   0%|          | 0/25 [00:00<?, ?it/s]Testing:  36%|███▌      | 9/25 [00:00<00:00, 81.45it/s]Testing:  72%|███████▏  | 18/25 [00:00<00:00, 74.31it/s]Testing: 100%|██████████| 25/25 [00:00<00:00, 62.32it/s]
+Test first three DOF average error: 0.1322 m/s
+Test last three DOF average error: 0.1713 rad/s (9.8157 deg/s)
+Test average MSE loss: 0.066673
+正在加载文件夹 51 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5340.79it/s]
+正在归一化数据...
+Testing:   0%|          | 0/14 [00:00<?, ?it/s]Testing:  29%|██▊       | 4/14 [00:00<00:00, 38.31it/s]Testing:  79%|███████▊  | 11/14 [00:00<00:00, 54.01it/s]Testing: 100%|██████████| 14/14 [00:00<00:00, 50.53it/s]
+Test first three DOF average error: 0.1821 m/s
+Test last three DOF average error: 0.2849 rad/s (16.3211 deg/s)
+Test average MSE loss: 0.124024
+正在加载文件夹 2 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5974.79it/s]
+正在归一化数据...
+Testing:   0%|          | 0/12 [00:00<?, ?it/s]Testing:  75%|███████▌  | 9/12 [00:00<00:00, 81.87it/s]Testing: 100%|██████████| 12/12 [00:00<00:00, 84.89it/s]
+Test first three DOF average error: 0.0967 m/s
+Test last three DOF average error: 0.1187 rad/s (6.8017 deg/s)
+Test average MSE loss: 0.029481
+正在加载文件夹 49 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4454.13it/s]
+正在归一化数据...
+Testing:   0%|          | 0/26 [00:00<?, ?it/s]Testing:  19%|█▉        | 5/26 [00:00<00:00, 43.86it/s]Testing:  38%|███▊      | 10/26 [00:00<00:00, 47.20it/s]Testing:  58%|█████▊    | 15/26 [00:00<00:00, 46.56it/s]Testing:  77%|███████▋  | 20/26 [00:00<00:00, 47.69it/s]Testing:  96%|█████████▌| 25/26 [00:00<00:00, 46.30it/s]Testing: 100%|██████████| 26/26 [00:00<00:00, 47.37it/s]
+Test first three DOF average error: 0.0947 m/s
+Test last three DOF average error: 0.0960 rad/s (5.5012 deg/s)
+Test average MSE loss: 0.025664
+正在加载文件夹 37 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 2863.66it/s]
+正在归一化数据...
+Testing:   0%|          | 0/59 [00:00<?, ?it/s]Testing:   8%|▊         | 5/59 [00:00<00:01, 49.55it/s]Testing:  17%|█▋        | 10/59 [00:00<00:01, 45.19it/s]Testing:  25%|██▌       | 15/59 [00:00<00:00, 44.02it/s]Testing:  36%|███▌      | 21/59 [00:00<00:00, 45.53it/s]Testing:  44%|████▍     | 26/59 [00:00<00:00, 45.90it/s]Testing:  53%|█████▎    | 31/59 [00:00<00:00, 45.33it/s]Testing:  61%|██████    | 36/59 [00:00<00:00, 46.10it/s]Testing:  71%|███████   | 42/59 [00:00<00:00, 46.80it/s]Testing:  83%|████████▎ | 49/59 [00:01<00:00, 51.81it/s]Testing:  98%|█████████▊| 58/59 [00:01<00:00, 60.76it/s]Testing: 100%|██████████| 59/59 [00:01<00:00, 51.61it/s]
+Test first three DOF average error: 0.0492 m/s
+Test last three DOF average error: 0.0521 rad/s (2.9824 deg/s)
+Test average MSE loss: 0.006407
+正在加载文件夹 47 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4615.89it/s]
+正在归一化数据...
+Testing:   0%|          | 0/20 [00:00<?, ?it/s]Testing:  20%|██        | 4/20 [00:00<00:00, 32.59it/s]Testing:  45%|████▌     | 9/20 [00:00<00:00, 36.38it/s]Testing:  65%|██████▌   | 13/20 [00:00<00:00, 31.73it/s]Testing:  85%|████████▌ | 17/20 [00:00<00:00, 30.71it/s]Testing: 100%|██████████| 20/20 [00:00<00:00, 33.17it/s]
+Test first three DOF average error: 0.1408 m/s
+Test last three DOF average error: 0.2035 rad/s (11.6579 deg/s)
+Test average MSE loss: 0.072490
+正在加载文件夹 23 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 2593.35it/s]
+正在归一化数据...
+Testing:   0%|          | 0/64 [00:00<?, ?it/s]Testing:   5%|▍         | 3/64 [00:00<00:02, 29.83it/s]Testing:   9%|▉         | 6/64 [00:00<00:02, 28.45it/s]Testing:  14%|█▍        | 9/64 [00:00<00:01, 28.73it/s]Testing:  22%|██▏       | 14/64 [00:00<00:01, 34.45it/s]Testing:  36%|███▌      | 23/64 [00:00<00:00, 51.29it/s]Testing:  50%|█████     | 32/64 [00:00<00:00, 61.47it/s]Testing:  61%|██████    | 39/64 [00:00<00:00, 61.47it/s]Testing:  72%|███████▏  | 46/64 [00:01<00:00, 43.24it/s]Testing:  81%|████████▏ | 52/64 [00:01<00:00, 43.48it/s]Testing:  89%|████████▉ | 57/64 [00:01<00:00, 44.94it/s]Testing:  97%|█████████▋| 62/64 [00:01<00:00, 44.72it/s]Testing: 100%|██████████| 64/64 [00:01<00:00, 44.93it/s]
+Test first three DOF average error: 0.0624 m/s
+Test last three DOF average error: 0.0745 rad/s (4.2665 deg/s)
+Test average MSE loss: 0.013739
+正在加载文件夹 11 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4165.15it/s]
+正在归一化数据...
+Testing:   0%|          | 0/31 [00:00<?, ?it/s]Testing:  29%|██▉       | 9/31 [00:00<00:00, 80.19it/s]Testing:  58%|█████▊    | 18/31 [00:00<00:00, 80.46it/s]Testing:  87%|████████▋ | 27/31 [00:00<00:00, 80.54it/s]Testing: 100%|██████████| 31/31 [00:00<00:00, 81.59it/s]
+Test first three DOF average error: 0.0778 m/s
+Test last three DOF average error: 0.0768 rad/s (4.4000 deg/s)
+Test average MSE loss: 0.019708
+正在加载文件夹 3 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 6546.78it/s]
+正在归一化数据...
+Testing:   0%|          | 0/4 [00:00<?, ?it/s]Testing: 100%|██████████| 4/4 [00:00<00:00, 83.74it/s]
+Test first three DOF average error: 0.0448 m/s
+Test last three DOF average error: 0.0442 rad/s (2.5304 deg/s)
+Test average MSE loss: 0.004029
+正在加载文件夹 21 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 6064.05it/s]
+正在归一化数据...
+Testing:   0%|          | 0/4 [00:00<?, ?it/s]Testing: 100%|██████████| 4/4 [00:00<00:00, 47.63it/s]
+Test first three DOF average error: 0.0495 m/s
+Test last three DOF average error: 0.0708 rad/s (4.0580 deg/s)
+Test average MSE loss: 0.009128
+正在加载文件夹 26 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 3794.61it/s]
+正在归一化数据...
+Testing:   0%|          | 0/33 [00:00<?, ?it/s]Testing:   6%|▌         | 2/33 [00:00<00:02, 11.29it/s]Testing:  18%|█▊        | 6/33 [00:00<00:01, 23.93it/s]Testing:  33%|███▎      | 11/33 [00:00<00:00, 31.20it/s]Testing:  61%|██████    | 20/33 [00:00<00:00, 49.12it/s]Testing:  79%|███████▉  | 26/33 [00:00<00:00, 44.94it/s]Testing:  94%|█████████▍| 31/33 [00:00<00:00, 45.16it/s]Testing: 100%|██████████| 33/33 [00:00<00:00, 40.40it/s]
+Test first three DOF average error: 0.1562 m/s
+Test last three DOF average error: 0.1914 rad/s (10.9662 deg/s)
+Test average MSE loss: 0.084983
+正在加载文件夹 5 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4332.96it/s]
+正在归一化数据...
+Testing:   0%|          | 0/27 [00:00<?, ?it/s]Testing:  11%|█         | 3/27 [00:00<00:00, 29.73it/s]Testing:  26%|██▌       | 7/27 [00:00<00:00, 32.13it/s]Testing:  41%|████      | 11/27 [00:00<00:00, 32.18it/s]Testing:  59%|█████▉    | 16/27 [00:00<00:00, 27.33it/s]Testing:  74%|███████▍  | 20/27 [00:00<00:00, 28.23it/s]Testing:  85%|████████▌ | 23/27 [00:00<00:00, 27.80it/s]Testing: 100%|██████████| 27/27 [00:00<00:00, 30.43it/s]
+Test first three DOF average error: 0.1274 m/s
+Test last three DOF average error: 0.1396 rad/s (7.9980 deg/s)
+Test average MSE loss: 0.055499
+正在加载文件夹 38 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5098.42it/s]
+正在归一化数据...
+Testing:   0%|          | 0/18 [00:00<?, ?it/s]Testing:  17%|█▋        | 3/18 [00:00<00:00, 24.87it/s]Testing:  39%|███▉      | 7/18 [00:00<00:00, 30.45it/s]Testing:  67%|██████▋   | 12/18 [00:00<00:00, 36.86it/s]Testing:  94%|█████████▍| 17/18 [00:00<00:00, 39.25it/s]Testing: 100%|██████████| 18/18 [00:00<00:00, 38.08it/s]
+Test first three DOF average error: 0.1123 m/s
+Test last three DOF average error: 0.1654 rad/s (9.4748 deg/s)
+Test average MSE loss: 0.053810
+正在加载文件夹 0 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4228.13it/s]
+正在归一化数据...
+Testing:   0%|          | 0/31 [00:00<?, ?it/s]Testing:  16%|█▌        | 5/31 [00:00<00:00, 31.32it/s]Testing:  45%|████▌     | 14/31 [00:00<00:00, 56.80it/s]Testing:  74%|███████▍  | 23/31 [00:00<00:00, 68.00it/s]Testing: 100%|██████████| 31/31 [00:00<00:00, 66.17it/s]
+Test first three DOF average error: 0.1494 m/s
+Test last three DOF average error: 0.2104 rad/s (12.0525 deg/s)
+Test average MSE loss: 0.090514
+正在加载文件夹 33 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5458.96it/s]
+正在归一化数据...
+Testing:   0%|          | 0/16 [00:00<?, ?it/s]Testing:  19%|█▉        | 3/16 [00:00<00:00, 28.71it/s]Testing:  38%|███▊      | 6/16 [00:00<00:00, 28.75it/s]Testing:  62%|██████▎   | 10/16 [00:00<00:00, 30.31it/s]Testing:  88%|████████▊ | 14/16 [00:00<00:00, 29.03it/s]Testing: 100%|██████████| 16/16 [00:00<00:00, 29.29it/s]
+Test first three DOF average error: 0.1287 m/s
+Test last three DOF average error: 0.1574 rad/s (9.0192 deg/s)
+Test average MSE loss: 0.065541
+正在加载文件夹 42 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5331.74it/s]
+正在归一化数据...
+Testing:   0%|          | 0/7 [00:00<?, ?it/s]Testing:  57%|█████▋    | 4/7 [00:00<00:00, 34.19it/s]Testing: 100%|██████████| 7/7 [00:00<00:00, 32.46it/s]
+Test first three DOF average error: 0.2209 m/s
+Test last three DOF average error: 0.2640 rad/s (15.1238 deg/s)
+Test average MSE loss: 0.137886
+正在加载文件夹 13 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 3285.36it/s]
+正在归一化数据...
+Testing:   0%|          | 0/48 [00:00<?, ?it/s]Testing:  19%|█▉        | 9/48 [00:00<00:00, 84.11it/s]Testing:  38%|███▊      | 18/48 [00:00<00:00, 57.75it/s]Testing:  52%|█████▏    | 25/48 [00:00<00:00, 50.12it/s]Testing:  65%|██████▍   | 31/48 [00:00<00:00, 48.43it/s]Testing:  75%|███████▌  | 36/48 [00:00<00:00, 46.13it/s]Testing:  90%|████████▉ | 43/48 [00:00<00:00, 51.62it/s]Testing: 100%|██████████| 48/48 [00:00<00:00, 53.33it/s]
+Test first three DOF average error: 0.0696 m/s
+Test last three DOF average error: 0.0815 rad/s (4.6682 deg/s)
+Test average MSE loss: 0.018598
+正在加载文件夹 24 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 3375.24it/s]
+正在归一化数据...
+Testing:   0%|          | 0/60 [00:00<?, ?it/s]Testing:   5%|▌         | 3/60 [00:00<00:03, 16.25it/s]Testing:  13%|█▎        | 8/60 [00:00<00:01, 29.58it/s]Testing:  23%|██▎       | 14/60 [00:00<00:01, 38.61it/s]Testing:  33%|███▎      | 20/60 [00:00<00:00, 42.24it/s]Testing:  47%|████▋     | 28/60 [00:00<00:00, 53.76it/s]Testing:  57%|█████▋    | 34/60 [00:00<00:00, 43.48it/s]Testing:  65%|██████▌   | 39/60 [00:00<00:00, 40.85it/s]Testing:  77%|███████▋  | 46/60 [00:01<00:00, 47.90it/s]Testing:  92%|█████████▏| 55/60 [00:01<00:00, 57.66it/s]Testing: 100%|██████████| 60/60 [00:01<00:00, 48.55it/s]
+Test first three DOF average error: 0.0676 m/s
+Test last three DOF average error: 0.0821 rad/s (4.7016 deg/s)
+Test average MSE loss: 0.014630
+正在加载文件夹 45 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 7061.12it/s]
+正在归一化数据...
+Testing:   0%|          | 0/3 [00:00<?, ?it/s]Testing:  67%|██████▋   | 2/3 [00:00<00:00, 18.08it/s]Testing: 100%|██████████| 3/3 [00:00<00:00, 25.41it/s]
+Test first three DOF average error: 0.1378 m/s
+Test last three DOF average error: 0.2983 rad/s (17.0898 deg/s)
+Test average MSE loss: 0.110645
+正在加载文件夹 28 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4703.89it/s]
+正在归一化数据...
+Testing:   0%|          | 0/20 [00:00<?, ?it/s]Testing:  15%|█▌        | 3/20 [00:00<00:00, 29.95it/s]Testing:  35%|███▌      | 7/20 [00:00<00:00, 34.02it/s]Testing:  55%|█████▌    | 11/20 [00:00<00:00, 31.27it/s]Testing:  75%|███████▌  | 15/20 [00:00<00:00, 29.89it/s]Testing:  95%|█████████▌| 19/20 [00:00<00:00, 30.05it/s]Testing: 100%|██████████| 20/20 [00:00<00:00, 31.20it/s]
+Test first three DOF average error: 0.1262 m/s
+Test last three DOF average error: 0.2101 rad/s (12.0358 deg/s)
+Test average MSE loss: 0.078565
+正在加载文件夹 22 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 3994.58it/s]
+正在归一化数据...
+Testing:   0%|          | 0/34 [00:00<?, ?it/s]Testing:  26%|██▋       | 9/34 [00:00<00:00, 83.07it/s]Testing:  53%|█████▎    | 18/34 [00:00<00:00, 55.17it/s]Testing:  79%|███████▉  | 27/34 [00:00<00:00, 65.46it/s]Testing: 100%|██████████| 34/34 [00:00<00:00, 68.06it/s]
+Test first three DOF average error: 0.0545 m/s
+Test last three DOF average error: 0.0736 rad/s (4.2194 deg/s)
+Test average MSE loss: 0.011692
+正在加载文件夹 8 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 3964.37it/s]
+正在归一化数据...
+Testing:   0%|          | 0/37 [00:00<?, ?it/s]Testing:  14%|█▎        | 5/37 [00:00<00:00, 47.42it/s]Testing:  27%|██▋       | 10/37 [00:00<00:00, 45.32it/s]Testing:  41%|████      | 15/37 [00:00<00:00, 42.89it/s]Testing:  54%|█████▍    | 20/37 [00:00<00:00, 43.96it/s]Testing:  68%|██████▊   | 25/37 [00:00<00:00, 42.56it/s]Testing:  81%|████████  | 30/37 [00:00<00:00, 32.15it/s]Testing:  95%|█████████▍| 35/37 [00:00<00:00, 35.74it/s]Testing: 100%|██████████| 37/37 [00:00<00:00, 38.77it/s]
+Test first three DOF average error: 0.0946 m/s
+Test last three DOF average error: 0.0965 rad/s (5.5280 deg/s)
+Test average MSE loss: 0.024877
+正在加载文件夹 18 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4337.44it/s]
+正在归一化数据...
+Testing:   0%|          | 0/34 [00:00<?, ?it/s]Testing:  15%|█▍        | 5/34 [00:00<00:00, 41.76it/s]Testing:  29%|██▉       | 10/34 [00:00<00:00, 45.30it/s]Testing:  47%|████▋     | 16/34 [00:00<00:00, 50.31it/s]Testing:  74%|███████▎  | 25/34 [00:00<00:00, 63.44it/s]Testing: 100%|██████████| 34/34 [00:00<00:00, 70.98it/s]Testing: 100%|██████████| 34/34 [00:00<00:00, 62.52it/s]
+Test first three DOF average error: 0.0492 m/s
+Test last three DOF average error: 0.0677 rad/s (3.8805 deg/s)
+Test average MSE loss: 0.010247
+正在加载文件夹 9 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4390.41it/s]
+正在归一化数据...
+Testing:   0%|          | 0/25 [00:00<?, ?it/s]Testing:  20%|██        | 5/25 [00:00<00:00, 41.17it/s]Testing:  40%|████      | 10/25 [00:00<00:00, 44.43it/s]Testing:  60%|██████    | 15/25 [00:00<00:00, 42.76it/s]Testing:  80%|████████  | 20/25 [00:00<00:00, 42.05it/s]Testing: 100%|██████████| 25/25 [00:00<00:00, 41.62it/s]Testing: 100%|██████████| 25/25 [00:00<00:00, 42.07it/s]
+Test first three DOF average error: 0.1265 m/s
+Test last three DOF average error: 0.2349 rad/s (13.4598 deg/s)
+Test average MSE loss: 0.083216
+正在加载文件夹 19 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 2454.24it/s]
+正在归一化数据...
+Testing:   0%|          | 0/54 [00:00<?, ?it/s]Testing:   9%|▉         | 5/54 [00:00<00:00, 49.35it/s]Testing:  19%|█▊        | 10/54 [00:00<00:00, 49.63it/s]Testing:  35%|███▌      | 19/54 [00:00<00:00, 66.27it/s]Testing:  50%|█████     | 27/54 [00:00<00:00, 71.45it/s]Testing:  65%|██████▍   | 35/54 [00:00<00:00, 60.77it/s]Testing:  78%|███████▊  | 42/54 [00:00<00:00, 55.66it/s]Testing:  89%|████████▉ | 48/54 [00:00<00:00, 55.18it/s]Testing: 100%|██████████| 54/54 [00:00<00:00, 58.05it/s]
+Test first three DOF average error: 0.0641 m/s
+Test last three DOF average error: 0.0816 rad/s (4.6745 deg/s)
+Test average MSE loss: 0.013870
+Device set to : NVIDIA GeForce RTX 4090 D
+Model loaded successfully
+正在加载文件夹 25 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 3437.95it/s]
+正在归一化数据...
+Testing:   0%|          | 0/51 [00:00<?, ?it/s]Testing:   6%|▌         | 3/51 [00:00<00:01, 27.67it/s]Testing:  12%|█▏        | 6/51 [00:00<00:01, 28.99it/s]Testing:  20%|█▉        | 10/51 [00:00<00:01, 31.15it/s]Testing:  27%|██▋       | 14/51 [00:00<00:01, 32.84it/s]Testing:  37%|███▋      | 19/51 [00:00<00:01, 30.26it/s]Testing:  47%|████▋     | 24/51 [00:00<00:00, 34.78it/s]Testing:  57%|█████▋    | 29/51 [00:00<00:00, 38.92it/s]Testing:  67%|██████▋   | 34/51 [00:00<00:00, 41.22it/s]Testing:  84%|████████▍ | 43/51 [00:01<00:00, 53.83it/s]Testing:  96%|█████████▌| 49/51 [00:01<00:00, 46.86it/s]Testing: 100%|██████████| 51/51 [00:01<00:00, 41.37it/s]
+Test first three DOF average error: 0.0755 m/s
+Test last three DOF average error: 0.0830 rad/s (4.7577 deg/s)
+Test average MSE loss: 0.015899
+正在加载文件夹 16 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4298.91it/s]
+正在归一化数据...
+Testing:   0%|          | 0/28 [00:00<?, ?it/s]Testing:  32%|███▏      | 9/28 [00:00<00:00, 78.53it/s]Testing:  61%|██████    | 17/28 [00:00<00:00, 57.26it/s]Testing:  86%|████████▌ | 24/28 [00:00<00:00, 51.67it/s]Testing: 100%|██████████| 28/28 [00:00<00:00, 54.75it/s]
+Test first three DOF average error: 0.1089 m/s
+Test last three DOF average error: 0.1036 rad/s (5.9343 deg/s)
+Test average MSE loss: 0.033157
+正在加载文件夹 53 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5311.49it/s]
+正在归一化数据...
+Testing:   0%|          | 0/15 [00:00<?, ?it/s]Testing:  60%|██████    | 9/15 [00:00<00:00, 82.79it/s]Testing: 100%|██████████| 15/15 [00:00<00:00, 65.33it/s]
+Test first three DOF average error: 0.1685 m/s
+Test last three DOF average error: 0.1721 rad/s (9.8623 deg/s)
+Test average MSE loss: 0.071987
+正在加载文件夹 14 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5069.67it/s]
+正在归一化数据...
+Testing:   0%|          | 0/21 [00:00<?, ?it/s]Testing:  24%|██▍       | 5/21 [00:00<00:00, 39.75it/s]Testing:  48%|████▊     | 10/21 [00:00<00:00, 43.50it/s]Testing:  71%|███████▏  | 15/21 [00:00<00:00, 45.42it/s]Testing:  95%|█████████▌| 20/21 [00:00<00:00, 44.62it/s]Testing: 100%|██████████| 21/21 [00:00<00:00, 44.55it/s]
+Test first three DOF average error: 0.2262 m/s
+Test last three DOF average error: 0.3465 rad/s (19.8507 deg/s)
+Test average MSE loss: 0.220287
+正在加载文件夹 43 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5269.23it/s]
+正在归一化数据...
+Testing:   0%|          | 0/18 [00:00<?, ?it/s]Testing:  50%|█████     | 9/18 [00:00<00:00, 83.27it/s]Testing: 100%|██████████| 18/18 [00:00<00:00, 85.56it/s]Testing: 100%|██████████| 18/18 [00:00<00:00, 85.15it/s]
+Test first three DOF average error: 0.2525 m/s
+Test last three DOF average error: 0.3637 rad/s (20.8391 deg/s)
+Test average MSE loss: 0.237316
+正在加载文件夹 50 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5047.30it/s]
+正在归一化数据...
+Testing:   0%|          | 0/17 [00:00<?, ?it/s]Testing:  53%|█████▎    | 9/17 [00:00<00:00, 80.73it/s]Testing: 100%|██████████| 17/17 [00:00<00:00, 73.09it/s]
+Test first three DOF average error: 0.1161 m/s
+Test last three DOF average error: 0.1545 rad/s (8.8527 deg/s)
+Test average MSE loss: 0.052056
+正在加载文件夹 27 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4867.66it/s]
+正在归一化数据...
+Testing:   0%|          | 0/19 [00:00<?, ?it/s]Testing:  16%|█▌        | 3/19 [00:00<00:00, 27.70it/s]Testing:  32%|███▏      | 6/19 [00:00<00:00, 25.86it/s]Testing:  58%|█████▊    | 11/19 [00:00<00:00, 33.63it/s]Testing:  89%|████████▉ | 17/19 [00:00<00:00, 40.15it/s]Testing: 100%|██████████| 19/19 [00:00<00:00, 37.48it/s]
+Test first three DOF average error: 0.0720 m/s
+Test last three DOF average error: 0.0817 rad/s (4.6786 deg/s)
+Test average MSE loss: 0.015546
+正在加载文件夹 40 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 3606.45it/s]
+正在归一化数据...
+Testing:   0%|          | 0/34 [00:00<?, ?it/s]Testing:  26%|██▋       | 9/34 [00:00<00:00, 82.41it/s]Testing:  53%|█████▎    | 18/34 [00:00<00:00, 83.28it/s]Testing:  79%|███████▉  | 27/34 [00:00<00:00, 83.75it/s]Testing: 100%|██████████| 34/34 [00:00<00:00, 84.41it/s]
+Test first three DOF average error: 0.1281 m/s
+Test last three DOF average error: 0.1286 rad/s (7.3684 deg/s)
+Test average MSE loss: 0.040963
+正在加载文件夹 4 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 3441.72it/s]
+正在归一化数据...
+Testing:   0%|          | 0/37 [00:00<?, ?it/s]Testing:  24%|██▍       | 9/37 [00:00<00:00, 81.82it/s]Testing:  49%|████▊     | 18/37 [00:00<00:00, 82.17it/s]Testing:  73%|███████▎  | 27/37 [00:00<00:00, 80.67it/s]Testing:  97%|█████████▋| 36/37 [00:00<00:00, 82.00it/s]Testing: 100%|██████████| 37/37 [00:00<00:00, 82.70it/s]
+Test first three DOF average error: 0.0749 m/s
+Test last three DOF average error: 0.0692 rad/s (3.9624 deg/s)
+Test average MSE loss: 0.017265
+正在加载文件夹 44 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 6361.43it/s]
+正在归一化数据...
+Testing:   0%|          | 0/6 [00:00<?, ?it/s]Testing: 100%|██████████| 6/6 [00:00<00:00, 61.51it/s]
+Test first three DOF average error: 0.2137 m/s
+Test last three DOF average error: 0.4230 rad/s (24.2367 deg/s)
+Test average MSE loss: 0.239831
+正在加载文件夹 7 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 3488.47it/s]
+正在归一化数据...
+Testing:   0%|          | 0/41 [00:00<?, ?it/s]Testing:   7%|▋         | 3/41 [00:00<00:01, 22.62it/s]Testing:  15%|█▍        | 6/41 [00:00<00:01, 23.07it/s]Testing:  22%|██▏       | 9/41 [00:00<00:01, 22.61it/s]Testing:  29%|██▉       | 12/41 [00:00<00:01, 22.36it/s]Testing:  37%|███▋      | 15/41 [00:00<00:01, 23.21it/s]Testing:  44%|████▍     | 18/41 [00:00<00:00, 23.22it/s]Testing:  51%|█████     | 21/41 [00:00<00:00, 22.29it/s]Testing:  59%|█████▊    | 24/41 [00:01<00:00, 22.26it/s]Testing:  66%|██████▌   | 27/41 [00:01<00:00, 22.40it/s]Testing:  73%|███████▎  | 30/41 [00:01<00:00, 22.54it/s]Testing:  80%|████████  | 33/41 [00:01<00:00, 22.59it/s]Testing:  88%|████████▊ | 36/41 [00:01<00:00, 22.48it/s]Testing:  95%|█████████▌| 39/41 [00:01<00:00, 24.17it/s]Testing: 100%|██████████| 41/41 [00:01<00:00, 23.35it/s]
+Test first three DOF average error: 0.0482 m/s
+Test last three DOF average error: 0.0465 rad/s (2.6630 deg/s)
+Test average MSE loss: 0.004830
+Device set to : NVIDIA GeForce RTX 4090 D
+Model loaded successfully
+正在加载文件夹 1 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4205.52it/s]
+正在归一化数据...
+Testing:   0%|          | 0/20 [00:00<?, ?it/s]Testing:  10%|█         | 2/20 [00:00<00:00, 18.44it/s]Testing:  25%|██▌       | 5/20 [00:00<00:00, 23.42it/s]Testing:  40%|████      | 8/20 [00:00<00:00, 26.15it/s]Testing:  55%|█████▌    | 11/20 [00:00<00:00, 27.20it/s]Testing:  70%|███████   | 14/20 [00:00<00:00, 27.81it/s]Testing:  85%|████████▌ | 17/20 [00:00<00:00, 27.60it/s]Testing: 100%|██████████| 20/20 [00:00<00:00, 27.27it/s]
+Test first three DOF average error: 0.1334 m/s
+Test last three DOF average error: 0.3222 rad/s (18.4598 deg/s)
+Test average MSE loss: 0.143690
+正在加载文件夹 10 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 3411.85it/s]
+正在归一化数据...
+Testing:   0%|          | 0/46 [00:00<?, ?it/s]Testing:  20%|█▉        | 9/46 [00:00<00:00, 82.79it/s]Testing:  39%|███▉      | 18/46 [00:00<00:00, 63.42it/s]Testing:  54%|█████▍    | 25/46 [00:00<00:00, 53.77it/s]Testing:  67%|██████▋   | 31/46 [00:00<00:00, 45.57it/s]Testing:  78%|███████▊  | 36/46 [00:00<00:00, 39.89it/s]Testing:  89%|████████▉ | 41/46 [00:00<00:00, 37.07it/s]Testing: 100%|██████████| 46/46 [00:01<00:00, 38.79it/s]Testing: 100%|██████████| 46/46 [00:01<00:00, 43.97it/s]
+Test first three DOF average error: 0.1759 m/s
+Test last three DOF average error: 0.2189 rad/s (12.5432 deg/s)
+Test average MSE loss: 0.105219
+正在加载文件夹 29 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4737.54it/s]
+正在归一化数据...
+Testing:   0%|          | 0/26 [00:00<?, ?it/s]Testing:   4%|▍         | 1/26 [00:00<00:03,  7.71it/s]Testing:  27%|██▋       | 7/26 [00:00<00:00, 34.24it/s]Testing:  62%|██████▏   | 16/26 [00:00<00:00, 55.70it/s]Testing:  96%|█████████▌| 25/26 [00:00<00:00, 66.34it/s]Testing: 100%|██████████| 26/26 [00:00<00:00, 56.87it/s]
+Test first three DOF average error: 0.0622 m/s
+Test last three DOF average error: 0.0797 rad/s (4.5677 deg/s)
+Test average MSE loss: 0.016373
+正在加载文件夹 6 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4259.62it/s]
+正在归一化数据...
+Testing:   0%|          | 0/34 [00:00<?, ?it/s]Testing:  26%|██▋       | 9/34 [00:00<00:00, 83.15it/s]Testing:  53%|█████▎    | 18/34 [00:00<00:00, 83.31it/s]Testing:  79%|███████▉  | 27/34 [00:00<00:00, 56.39it/s]Testing: 100%|██████████| 34/34 [00:00<00:00, 51.70it/s]Testing: 100%|██████████| 34/34 [00:00<00:00, 57.16it/s]
+Test first three DOF average error: 0.0744 m/s
+Test last three DOF average error: 0.0902 rad/s (5.1704 deg/s)
+Test average MSE loss: 0.020484
+正在加载文件夹 30 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4415.06it/s]
+正在归一化数据...
+Testing:   0%|          | 0/19 [00:00<?, ?it/s]Testing:  16%|█▌        | 3/19 [00:00<00:00, 21.50it/s]Testing:  32%|███▏      | 6/19 [00:00<00:00, 22.31it/s]Testing:  47%|████▋     | 9/19 [00:00<00:00, 25.10it/s]Testing:  63%|██████▎   | 12/19 [00:00<00:00, 25.63it/s]Testing:  84%|████████▍ | 16/19 [00:00<00:00, 29.33it/s]Testing: 100%|██████████| 19/19 [00:00<00:00, 28.63it/s]
+Test first three DOF average error: 0.0372 m/s
+Test last three DOF average error: 0.0408 rad/s (2.3385 deg/s)
+Test average MSE loss: 0.002966
+正在加载文件夹 36 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4751.85it/s]
+正在归一化数据...
+Testing:   0%|          | 0/26 [00:00<?, ?it/s]Testing:   8%|▊         | 2/26 [00:00<00:01, 13.73it/s]Testing:  42%|████▏     | 11/26 [00:00<00:00, 49.30it/s]Testing:  73%|███████▎  | 19/26 [00:00<00:00, 55.87it/s]Testing:  96%|█████████▌| 25/26 [00:00<00:00, 48.88it/s]Testing: 100%|██████████| 26/26 [00:00<00:00, 46.73it/s]
+Test first three DOF average error: 0.0614 m/s
+Test last three DOF average error: 0.0604 rad/s (3.4604 deg/s)
+Test average MSE loss: 0.009019
+正在加载文件夹 17 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5163.28it/s]
+正在归一化数据...
+Testing:   0%|          | 0/18 [00:00<?, ?it/s]Testing:  44%|████▍     | 8/18 [00:00<00:00, 79.86it/s]Testing:  94%|█████████▍| 17/18 [00:00<00:00, 80.71it/s]Testing: 100%|██████████| 18/18 [00:00<00:00, 81.50it/s]
+Test first three DOF average error: 0.1108 m/s
+Test last three DOF average error: 0.1627 rad/s (9.3242 deg/s)
+Test average MSE loss: 0.065760
+正在加载文件夹 46 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5890.88it/s]
+正在归一化数据...
+Testing:   0%|          | 0/8 [00:00<?, ?it/s]Testing:  62%|██████▎   | 5/8 [00:00<00:00, 44.88it/s]Testing: 100%|██████████| 8/8 [00:00<00:00, 54.97it/s]
+Test first three DOF average error: 0.1487 m/s
+Test last three DOF average error: 0.3004 rad/s (17.2105 deg/s)
+Test average MSE loss: 0.131440
+正在加载文件夹 31 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 5675.65it/s]
+正在归一化数据...
+Testing:   0%|          | 0/12 [00:00<?, ?it/s]Testing:  25%|██▌       | 3/12 [00:00<00:00, 29.52it/s]Testing:  50%|█████     | 6/12 [00:00<00:00, 29.58it/s]Testing:  75%|███████▌  | 9/12 [00:00<00:00, 29.74it/s]Testing: 100%|██████████| 12/12 [00:00<00:00, 33.74it/s]
+Test first three DOF average error: 0.0469 m/s
+Test last three DOF average error: 0.0730 rad/s (4.1814 deg/s)
+Test average MSE loss: 0.007011
+正在加载文件夹 52 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 7169.75it/s]
+正在归一化数据...
+Testing:   0%|          | 0/3 [00:00<?, ?it/s]Testing:  67%|██████▋   | 2/3 [00:00<00:00, 12.44it/s]Testing: 100%|██████████| 3/3 [00:00<00:00, 16.66it/s]
+Test first three DOF average error: 0.1436 m/s
+Test last three DOF average error: 0.2488 rad/s (14.2564 deg/s)
+Test average MSE loss: 0.083369
+正在加载文件夹 34 的数据...
+加载数据文件:   0%|          | 0/3 [00:00<?, ?it/s]加载数据文件: 100%|██████████| 3/3 [00:00<00:00, 4125.54it/s]
+正在归一化数据...
+Testing:   0%|          | 0/10 [00:00<?, ?it/s]Testing:  60%|██████    | 6/10 [00:00<00:00, 47.94it/s]Testing: 100%|██████████| 10/10 [00:00<00:00, 47.29it/s]
+Test first three DOF average error: 0.1190 m/s
+Test last three DOF average error: 0.1551 rad/s (8.8874 deg/s)
+Test average MSE loss: 0.064421

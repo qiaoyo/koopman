@@ -62,7 +62,7 @@ class LSTMPredictor(nn.Module):
         
         return predictions
 
-def create_model(input_dim=10, hidden_dim=128, num_layers=2, output_dim=6, dropout=0.1):
+def create_lstm_model(input_dim=10, hidden_dim=128, num_layers=2, output_dim=6, dropout=0.1):
     """
     创建LSTM模型实例
     

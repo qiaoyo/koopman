@@ -67,7 +67,7 @@ def visualize_training_history(save_dir):
 
 if __name__=="__main__":
     seed=1023
-    window=80
+    window=40
     batch_size=1024
     lr = 1e-4
     num_epochs = 50

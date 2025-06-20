@@ -182,7 +182,7 @@ def test_one_folder(folder=0,save_dir=None):
         f.write(f"Last three DOF average error: {np.mean(last_three_error):.4f} rad/s ({np.mean(last_three_error)*180/np.pi:.4f} deg/s)\n")
         f.write(f"Average MSE loss: {np.mean(time_step_losses):.6f}\n")
 
-def test_all_folders(folders=[],name='',save_dir=None,window=200,batch_size=1024,return_norm_data=True,norm_type='total',visualize_type='23'):
+def test_all_folders(folders=[],model_name='LSTM_decoder',name='',save_dir=None,window=200,batch_size=1024,return_norm_data=True,norm_type='total',visualize_type='23'):
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     base_path = '/home/pika/koopman-data/data/flights'
@@ -198,18 +198,43 @@ def test_all_folders(folders=[],name='',save_dir=None,window=200,batch_size=1024
     f=open(test_txt_save_dir, 'w')
     # Load saved model weights
     checkpoint_path = os.path.join(save_dir, 'best_model.pth')
-    from LSTM_decoder import MultiScaleTimeSeriesModel
-    model = MultiScaleTimeSeriesModel(input_dim=10, output_dim=6)
+    from LSTM_decoder_2 import MultiScaleTimeSeriesModel
     from DT_Former import DT_transformer
-    from lstm_model import LSTMPredictor,create_model
-    # model = DT_transformer()
-    # model = create_model(
-    # input_dim=10,
-    # hidden_dim=128,
-    # num_layers=2,
-    # output_dim=6,
-    # dropout=0.1
-    # )
+    from lstm_model import LSTMPredictor, create_lstm_model
+    # from learned_inertial_model_odometry.src.learning.network.model_tcn import Tcn
+    from tsai.models.TST import TST
+    from TCN import create_tcn_model
+    from tsai.models.TST import TST
+    from DronePose import DronePosePredictor,CombinedLoss
+    if model_name=='DronePose':
+        model = DronePosePredictor(
+            input_dim=10, 
+            output_dim=6,
+            gru_hidden_size=128,
+            gru_layers=2,
+            tcn_channels=64,
+            tcn_layers=4,
+            dropout=0.1
+        )
+    elif model_name=='LSTM_decoder':
+        model = MultiScaleTimeSeriesModel()
+    elif model_name=='DT_transformer':
+        model = DT_transformer()
+    elif model_name=='LSTM':
+        model = create_lstm_model(
+            input_dim=10,
+            hidden_dim=128,
+            num_layers=2,
+            output_dim=6,
+            dropout=0.1
+            )
+    elif model_name=='TCN':
+        model = create_tcn_model(
+            input_dim=10,
+            output_dim=6,
+            num_channels=[64, 64, 64, 64, 128, 128, 128],
+            kernel_size=2,
+            dropout=0.2)
 
     model = model.to(device)
 
@@ -328,22 +353,32 @@ def test_all_folders(folders=[],name='',save_dir=None,window=200,batch_size=1024
     plt.savefig(os.path.join(error_vis_dir, 'time_step_losses.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
+import argparse
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='测试模型参数设置')
+    parser.add_argument('--window', '-w', type=int, default=40, help='时间窗口大小')
+    parser.add_argument('--model_name', '-m', type=str, default='LSTM_decoder', 
+                      choices=['DronePose', 'LSTM_decoder', 'DT_transformer', 'LSTM', 'TCN'],
+                      help='模型名称')
+    args = parser.parse_args()
+
     # 设置参数
-    save_dir = '/home/pika/koopman-data/data/LSTM_decoder_0603190_folder'
+    window = args.window
+    model_name = args.model_name
+    save_dir = f'/home/pika/koopman-data/data/{model_name}_{window}'
     train_folders = np.load('/home/pika/koopman-data/data/processed/train_folders.npy')
     test_folders = np.load('/home/pika/koopman-data/data/processed/test_folders.npy')
     online_folders = np.load('/home/pika/koopman-data/data/processed/online_folders.npy')
 
-    window=190
-    norm_type='folder'
-    test_all_folders(train_folders.tolist(),name='train',
+    norm_type='total'
+    test_all_folders(train_folders.tolist(),model_name=model_name,name='train',
                      save_dir=save_dir,window=window,batch_size=1024,norm_type=norm_type,
                      visualize_type='6')
-    test_all_folders(test_folders.tolist(),name='test',
+    test_all_folders(test_folders.tolist(),model_name=model_name,name='test',
                      save_dir=save_dir,window=window,batch_size=1024,norm_type=norm_type,
                      visualize_type='6')
-    test_all_folders(online_folders.tolist(),name='online',
+    test_all_folders(online_folders.tolist(),model_name=model_name,name='online',
                      save_dir=save_dir,window=window,batch_size=1024,norm_type=norm_type,
                      visualize_type='6')
+
 

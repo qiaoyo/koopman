@@ -10,7 +10,7 @@ sweep_config = {
     'parameters': {
         # fixed parameters
         'window': {
-            'value': 80
+            'value': 100
         },
         'norm_type': {
             'value': 'total'
